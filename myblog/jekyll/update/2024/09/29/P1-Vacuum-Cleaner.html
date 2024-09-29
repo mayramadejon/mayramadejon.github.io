@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P1 - Vacuum Cleaner</title>
+    <!-- Enlace al archivo CSS -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons y favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body class="">
+    <header>
+        <h1>MOBILE ROBOTICS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">P1 - Vacuum Cleaner</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2024-09-29T07:49:08+02:00" itemprop="datePublished">Sep 29, 2024
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="practice-1-developing-a-vacuum-cleaner-exploration-algorithm">Practice 1: Developing a Vacuum Cleaner Exploration Algorithm</h2>
+
+<h3 id="objective">Objective</h3>
+<p>The aim of this practice is to design and implement an exploration algorithm for a low-end vacuum cleaner robot. The robot has limited sensors, using only laser data and bumper feedback to navigate its environment. Notably, it does not have access to its location or an existing map of the surroundings. Despite these constraints, our goal is to enable the robot to explore as much space as possible efficiently.</p>
+
+<hr />
+
+<h3 id="algorithm-overview">Algorithm Overview</h3>
+
+<h4 id="finite-state-machine-fsm-structure">Finite State Machine (FSM) Structure</h4>
+
+<p>The robot’s behavior is controlled by an FSM that includes five distinct states:</p>
+
+<ol>
+  <li><strong>Exploring</strong> - The robot moves forward, scanning its environment.</li>
+  <li><strong>Backing</strong> - Upon collision detection, the robot reverses.</li>
+  <li><strong>Turning</strong> - After backing, the robot turns to find a new direction.</li>
+  <li><strong>Spiraling</strong> - The robot moves in an expanding spiral to explore new areas.</li>
+  <li><strong>Scaping</strong> - A backup mechanism to help the robot escape from tricky areas if it gets stuck.</li>
+</ol>
+
+<p>The state transitions are triggered based on sensor inputs, primarily laser and bumper data, and timers designed to ensure the robot doesn’t get stuck in one area.</p>
+
+<hr />
+
+<h3 id="exploring-the-states">Exploring the States</h3>
+
+<p>Here’s a breakdown of each state and its role in the exploration algorithm:</p>
+
+<ul>
+  <li><strong>Exploring State:</strong>
+    <ul>
+      <li>The robot moves straight ahead while checking for obstacles. If it detects a collision via its bumper sensors, it switches to the <strong>Backing State</strong>. It can also enter a <strong>Spiraling State</strong> after 3 seconds of forward movement to further explore open areas.
+ If a significant amount of time has passed since the last time it was in the SPIRALING state, consider that it is in a closed space, as it has not spent more than 3 seconds without colliding, and switch to the SCAPING state to avoid staying in the same place for too long.</li>
+    </ul>
+  </li>
+  <li><strong>Backing State:</strong>
+    <ul>
+      <li>If the robot collides with an object, it immediately reverses to create space. After a short backward movement of 0.3 m or the passage of 3 seconds, considering that it cannot reverse the required distance, the robot transitions to the <strong>Turning State</strong> to avoid further obstacles.</li>
+    </ul>
+  </li>
+  <li><strong>Turning State:</strong>
+    <ul>
+      <li>The robot rotates in place, choosing a random direction, and re-enters the <strong>Exploring State</strong> after half a second. This allows the robot to find new areas to explore after each collision.</li>
+    </ul>
+  </li>
+  <li><strong>Spiraling State:</strong>
+    <ul>
+      <li>The robot performs an outward spiral motion, allowing it to cover large areas efficiently. If a collision occurs, the robot moves back to the <strong>Backing State</strong>. The spiral state ensures wide area coverage while preventing it from sticking to just one zone. If it has been a considerable amount of time in Spiraling, it returns to the <strong>Exploring State</strong></li>
+    </ul>
+  </li>
+  <li><strong>Scaping State:</strong>
+    <ul>
+      <li>This is a failsafe mode where the robot performs random escape maneuvers after spending too long in one spot. It reverses and turns to avoid obstacles and find a new path.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="state-diagram">State Diagram</h3>
+<p><img src="/assets/images/Diagrama.png" alt="Diagrama de Estados" />
+—</p>
+
+<h3 id="key-challenges-and-solutions">Key Challenges and Solutions</h3>
+
+<ol>
+  <li><strong>Limited Sensor Data:</strong>
+    <ul>
+      <li>The robot only has access to laser and bumper data, making it difficult to map the environment or localize itself. To overcome this, we focused on reactive behavior, ensuring the robot responds instantly to obstacles and intuitive timers.</li>
+    </ul>
+  </li>
+  <li><strong>Avoiding Deadlocks:</strong>
+    <ul>
+      <li>One of the key issues encountered was the robot getting stuck in corners or tight spaces. The <strong>Scaping State</strong> was added as a reactive measure, helping the robot escape these tricky spots by making unpredictable movements.</li>
+    </ul>
+  </li>
+  <li><strong>Tuning Spiral Exploration:</strong>
+    <ul>
+      <li>A challenge we faced was tuning the speed and width of the spiral in the <strong>Spiraling State</strong>. Too fast, and the robot might suffer damages; too slow, and it wastes time. Through experimentation, we found a balance that maximizes exploration while maintaining robot safe.</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+
+<h3 id="code-efficiency-and-design">Code Efficiency and Design</h3>
+
+<p>The algorithm was designed with efficiency in mind. We avoided any calls to blocking functions like <code class="language-plaintext highlighter-rouge">sleep()</code>, ensuring that the robot’s behavior remains responsive at all times. Additionally, each function is clearly separated to maintain readability and simplicity. The code is modular, with dedicated functions for each state, making it easy to adjust or expand upon as necessary.</p>
+
+<hr />
+
+<h3 id="random-turns">Random Turns</h3>
+
+<p>I wanted to add a random element to the practice to prevent the robot from always following the same path. To achieve this, the direction of the turns varies throughout the practice; the direction in which the spiral is drawn is chosen randomly each time, as well as the direction it turns in the Turning State. The direction the robot turns is also chosen randomly each time it searches for a path in the Scaping State.</p>
+
+<h3 id="results-and-performance">Results and Performance</h3>
+
+<p>In testing, the robot successfully navigated and explored various environments, avoiding obstacles and escaping tight corners. It covered a significant amount of space, demonstrating the effectiveness of the FSM approach. The transition between states was smooth, and the robot’s behavior was both reactive and efficient.
+Example that show its evolution in the house simulator:</p>
+
+<h2 id="after-5-minutes"><strong>After 5 minutes</strong></h2>
+<p><img src="/assets/images/5minutes.png" alt="5 minutes" /></p>
+
+<hr />
+
+<h3 id="video-demonstration">Video Demonstration</h3>
+
+<p>Here’s a video of our vacuum cleaner robot in action, navigating through a test environment using the FSM-controlled exploration algorithm during 15 min.</p>
+
+<video controls="">
+    <source src="/assets/videos/vacuumcleaner.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+</video>
+
+<hr />
+
+  </div><a class="u-url" href="/jekyll/update/2024/09/29/P1-Vacuum-Cleaner.html" hidden></a>
+</article>
+
+    </main>
+    <footer>
+        <p>&copy; 2024 MOBILE ROBOTICS</p>
+    </footer>
+</body>
+</html>
