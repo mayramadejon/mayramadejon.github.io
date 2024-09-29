@@ -155,3 +155,10 @@ p {
     margin-top: 10px;
 }
 
+/* Estilos para el video */
+.video-container {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0; /* Añade margen para separar el video del contenido */
+}
+
