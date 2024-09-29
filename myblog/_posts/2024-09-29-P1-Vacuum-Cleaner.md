@@ -90,15 +90,6 @@ Example that show its evolution in the house simulator:
 
 Here’s a video of our vacuum cleaner robot in action, navigating through a test environment using the FSM-controlled exploration algorithm during 15 min.
 
-<section id="video-section">
-    <h2>Watch the Vacuum Cleaner in Action</h2>
-    <div class="video-container">
-    <video controls width="600">
-    <source src="{{ site.baseurl }}/assets/videos/vacuumcleaner_converted.webm" type="video/webm">
-    Your browser does not support the video tag.
-    </video>
-    </div>
-</section>
 
 
 
