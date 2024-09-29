@@ -1,0 +1,157 @@
+/* General body styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5; /* Light background for contrast */
+    color: #333;
+}
+
+/* Margen en el contenido principal */
+main {
+    margin-left: 50px; /* Añade un margen izquierdo para darle espacio */
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Cabecera */
+header {
+    background-color: #b78db4; /* Un tono morado más claro */
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Footer */
+footer {
+    background-color: #b78db4; /* El mismo morado claro */
+    color: white;
+    padding: 0; /* Eliminar el padding */
+    margin: 0; /* Eliminar el margen */
+    line-height: 1; /* Ajustar el espacio entre líneas */
+    font-size: 0.8em; /* Ajustar el tamaño de la fuente */
+    text-align: center;
+    position: relative; /* O 'static' para que esté al final del contenido */
+    width: 100%;
+}
+
+
+/* Fondo bonito solo en la front page */
+.front-page {
+    background-image: url('/assets/images/beautiful-background.jpg'); /* Imagen de fondo */
+    background-size: cover;
+    background-position: center;
+    height: 100vh; /* Toma todo el alto de la ventana */
+}
+
+/* Estilos para los títulos */
+h1, h2, h3 {
+    color: #4b2e83; /* Un morado algo más oscuro para los títulos */
+}
+
+/* Estilos para los enlaces */
+a {
+    color: #8e44ad; /* Morado suave */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Pequeños detalles de diseño */
+button, input[type="submit"] {
+    background-color: #8e44ad;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #732d91; /* Un morado más oscuro al pasar el mouse */
+}
+/* Estilos de la página principal */
+.homepage-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+}
+
+.hero-section {
+    text-align: center;
+    background-color: #f3f3f3;
+    padding: 50px 20px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+}
+
+.hero-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 3em;
+    color: #6A0DAD; /* Morado claro */
+}
+
+p {
+    font-size: 1.2em;
+    color: #555;
+}
+
+.button-primary {
+    background-color: #6A0DAD;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1.2em;
+    transition: background-color 0.3s ease;
+}
+
+.button-primary:hover {
+    background-color: #7D3FB8;
+}
+
+/* Lista de posts */
+.posts-list {
+    list-style: none;
+    padding: 0;
+}
+
+.post-item {
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    transition: box-shadow 0.3s ease;
+}
+
+.post-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-item h3 {
+    color: #6A0DAD;
+    margin-bottom: 10px;
+}
+
+.post-item p {
+    color: #333;
+}
+
+.post-item span {
+    display: block;
+    font-size: 0.9em;
+    color: #888;
+    margin-top: 10px;
+}
+
