@@ -42,85 +42,85 @@
             <div class="post-content e-content" itemprop="articleBody">
                 <h2 id="practice-2-follow-line-pid-controller-for-a-race-car">Practice 2: Follow Line: PID Controller for a Race Car</h2>
 
-                <h3 id="objective">Objective</h3>
-                <p>The goal of this practice is to program a controller for a Formula 1 car using images from a forward-facing color camera to follow a red line on the ground, which represents the center of the track. The challenge is for the car to complete a lap around the circuit as fast as possible, while staying centered on the lane using a PID control algorithm.</p>
+<h3 id="objective">Objective</h3>
+<p>The goal of this practice is to program a controller for a Formula 1 car using images from a forward-facing color camera to follow a red line on the ground, which represents the center of the track. The challenge is for the car to complete a lap around the circuit as fast as possible, while staying centered on the lane using a PID control algorithm.</p>
 
-                <hr />
+<hr />
 
-                <h3 id="algorithm-overview">Algorithm Overview</h3>
+<h3 id="algorithm-overview">Algorithm Overview</h3>
 
-                <h4 id="image-processing">Image Processing</h4>
-                <p>To detect the red line on the circuit, we used the OpenCV library to process the images captured by the car's camera. The camera takes an image of the surroundings and converts it to the HSV format (Hue, Saturation, Value), which makes it easier to detect specific colors.</p>
-                <p>We defined thresholds for the red color, which allow us to create a binary mask where pixels matching the red color are marked as 1 (white), and the rest as 0 (black). We then analyze this mask to find the center of the red line in the image.</p>
-                <p>The center of the red line is calculated from the average position of the red pixels detected in a selected row of the image. This gives us the "error," which is the deviation between the center of the red line and the center of the image. This error indicates how much the car's direction should be corrected.</p>
-
-
-                <hr />
-
-                <h3 id="pid-control">PID Control</h3>
-                <p>The car's control is managed by a PID controller (Proportional, Integral, Derivative), which adjusts the car's angular velocity based on the deviation from the center of the lane. The PID allows precise adjustments to the car's steering, keeping the path stable and fast.</p>
-                <ul>
-                    <li><strong>Proportional part (P)</strong>: The current deviation (error) between the center of the image and the center of the red line.</li>
-                    <li><strong>Derivative part (D)</strong>: The rate of change of the error over time, which helps smooth out oscillations.</li>
-                    <li><strong>Integral part (I)</strong>: Accumulates errors over time to correct small persistent deviations.</li>
-                </ul>
-                <p>The car stays centered by adjusting the angular velocity according to the error calculated by the PID. When the car detects that it's deviating from the center, the controller adjusts the steering in real-time to correct the trajectory.</p>
-
-                <h3 id="pid-parameter-tuning">PID Parameter Tuning for Angular</h3>
-                <p>The initial PID parameters were manually tuned through various tests on the track:</p>
-                <ul>
-                    <li><strong>Kp (Proportional)</strong>: Controls the direct reaction to the error. A value too high causes the car to oscillate, while a low value makes the car respond slowly.</li>
-                    <li><strong>Kd (Derivative)</strong>: Helps reduce oscillations when the car attempts to correct its path. A suitable value was found to smooth the car's movement.</li>
-                    <li><strong>Ki (Integral)</strong>: Since the deviations are small and fast, a very low value was set to avoid unnecessary accumulation of error.</li>
-                </ul>
-
-                <hr />
-                
-                <h3 id="linear-speed-control">Linear Speed Control Based on Angular Error</h3>
-                <p>In addition to controlling the car’s steering with a PID controller, we also implemented a mechanism to dynamically adjust the car’s linear speed based on its deviation from the center of the lane. When the car is following a straight line and the error is small, the speed increases, allowing the car to accelerate. However, when the car encounters a curve and the error becomes larger, the speed decreases proportionally. This ensures that the car maintains stability by slowing down when sharper turns are required, while maximizing speed on straight paths.</p>
-                <p>Through this approach, the car is able to adapt its speed in real-time, reducing the risk of overshooting curves and improving overall lap performance.</p>
-
-                <h3 id="speed-limits">Clipping of Linear Speed and Angular Velocity</h3>
-                <p>To ensure the car stays within safe operating limits, we imposed boundaries. While the car is allowed to accelerate on straight sections and slow down for curves, we ensure that its speed remains within a defined range, preventing excessive acceleration that could lead to instability.</p>
-                <p>This careful control of speed and steering maintains a balance between performance and stability, helping the car navigate both straight sections and curves efficiently without losing control.</p>
-
-                <hr />
-                <h3 id="ackerman-model-implementation">Ackerman Model</h3>
-                <p>During the development process, we transitioned from a simple differential steering model to a more realistic Ackerman steering model. This switch introduced new challenges that required us to rethink how the car handled turns and responded to the PID controller.</p>
-
-                <h4 id="steering-dynamics">Changes in Steering Dynamics</h4>
-                <p>The Ackerman model, which more accurately simulates the way real cars steer, adjusts the angle of each wheel differently during turns. This resulted in a significant change in the car's behavior, especially on sharp curves, where the previous PID parameters became less effective. The car would either oversteer or understeer, depending on the error and speed, leading to loss of control.</p>
-
-                <h4 id="pid-re-tuning">Re-tuning the PID Controller for Ackerman Model</h4>
-                <p>To make the Ackerman steering model work effectively, we had to manually retune the PID parameters. This involved adjusting the proportional, derivative, and integral values to maintain stable control, as the car's dynamics had changed significantly.</p>
-
-                <ul>
-                    <li><strong>Kp (Proportional)</strong>: We reduced the proportional gain to prevent the car from overreacting to small errors, which had become more noticeable with the Ackerman model. Lowering <strong>Kp</strong> helped minimize excessive steering corrections and kept the car's path smoother.</li>
-                    <li><strong>Kd (Derivative)</strong>: We also decreased the derivative term to avoid making the car's response too slow. A higher <strong>Kd</strong> value caused the car to hesitate during turns, leading to delayed reactions. Reducing it allowed for quicker, yet controlled, steering adjustments.</li>
-                    <li><strong>Ki (Integral)</strong>: The integral term remained small, as its role was to correct small, persistent errors that could cause the car to drift. In this case, it helped to address minor deviations that accumulated over time.</li>
-                </ul>
-
-                <h4 id="ackerman-speed">Impact on Speed and Control</h4>
-                <p>Despite maintaining the same linear speed as before, the Ackerman model caused the car to move more slowly overall due to the nature of its steering. This, however, turned out to be beneficial, as it provided greater stability and control, especially on sharp turns. By reducing the car's tendency to oversteer and keeping the steering smooth, we avoided the risk of the car losing control at high speeds, ultimately improving the car's performance on the track.</p>
-
-                <p>In summary, the Ackerman model improved the realism of the car's behavior and made it safer to handle, though at the cost of some speed. The trade-off was acceptable, as it ensured the car could navigate the track more reliably without sacrificing control.</p>
+<h4 id="image-processing">Image Processing</h4>
+<p>To detect the red line on the circuit, we used the OpenCV library to process the images captured by the car's camera. The camera takes an image of the surroundings and converts it to the HSV format (Hue, Saturation, Value), which makes it easier to detect specific colors.</p>
+<p>We defined thresholds for the red color, which allow us to create a binary mask where pixels matching the red color are marked as 1 (white), and the rest as 0 (black). We then analyze this mask to find the center of the red line in the image.</p>
+<p>The center of the red line is calculated from the average position of the red pixels detected in a selected row of the image. This gives us the "error," which is the deviation between the center of the red line and the center of the image. This error indicates how much the car's direction should be corrected.</p>
 
 
-                <hr />
-                <h3 id="key-challenges-and-solutions">Key Challenges and Solutions</h3>
+<hr />
 
-                <ol>
-                    <li><strong>Noise and inconsistencies in image detection</strong>: One of the challenges was dealing with noise or inconsistent detection of the red line in the images. Variations in lighting, shadows, or even slight variations in the camera angle sometimes caused false positives or gaps in the detection of the red pixels. To mitigate this, we considered smoothing techniques, such as averaging the detected positions over a few frames to reduce jitter.</li>
-                    <li><strong>Handling sharp turns</strong>: Initially, when the car approached a curve, the PID controller struggled to react fast enough to the large error values, especially at high speeds. Careful tuning of the proportional (Kp) and derivative (Kd) terms ensured the car could handle both gentle and sharp turns smoothly.</li>
-                    <li><strong>Balancing speed and control</strong>: Speed is a critical factor in racing, but increasing the car's speed also made it harder to maintain stable control. We adjusted the car's maximum speed dynamically, slowing down for curves and accelerating on straight sections, without sacrificing overall lap time.</li>
-                </ol>
+<h3 id="pid-control">PID Control</h3>
+<p>The car's control is managed by a PID controller (Proportional, Integral, Derivative), which adjusts the car's angular velocity based on the deviation from the center of the lane. The PID allows precise adjustments to the car's steering, keeping the path stable and fast.</p>
+<ul>
+    <li><strong>Proportional part (P)</strong>: The current deviation (error) between the center of the image and the center of the red line.</li>
+    <li><strong>Derivative part (D)</strong>: The rate of change of the error over time, which helps smooth out oscillations.</li>
+    <li><strong>Integral part (I)</strong>: Accumulates errors over time to correct small persistent deviations.</li>
+</ul>
+<p>The car stays centered by adjusting the angular velocity according to the error calculated by the PID. When the car detects that it's deviating from the center, the controller adjusts the steering in real-time to correct the trajectory.</p>
 
-                <hr />
+<h3 id="pid-parameter-tuning">PID Parameter Tuning for Angular</h3>
+<p>The initial PID parameters were manually tuned through various tests on the track:</p>
+<ul>
+    <li><strong>Kp (Proportional)</strong>: Controls the direct reaction to the error. A value too high causes the car to oscillate, while a low value makes the car respond slowly.</li>
+    <li><strong>Kd (Derivative)</strong>: Helps reduce oscillations when the car attempts to correct its path. A suitable value was found to smooth the car's movement.</li>
+    <li><strong>Ki (Integral)</strong>: Since the deviations are small and fast, a very low value was set to avoid unnecessary accumulation of error.</li>
+</ul>
 
-                <h3 id="results-and-performance">Results and Performance</h3>
-                <p>After implementing and tuning the PID controller, the car was able to complete a lap around the circuit efficiently, staying in the center of the lane in most tests. Lap times improved significantly once the parameters were optimized to allow the car to reach its maximum speed without losing stability.</p>
+<hr />
 
-                <hr />
+<h3 id="linear-speed-control">Linear Speed Control Based on Angular Error</h3>
+<p>In addition to controlling the car’s steering with a PID controller, we also implemented a mechanism to dynamically adjust the car’s linear speed based on its deviation from the center of the lane. When the car is following a straight line and the error is small, the speed increases, allowing the car to accelerate. However, when the car encounters a curve and the error becomes larger, the speed decreases proportionally. This ensures that the car maintains stability by slowing down when sharper turns are required, while maximizing speed on straight paths.</p>
+<p>Through this approach, the car is able to adapt its speed in real-time, reducing the risk of overshooting curves and improving overall lap performance.</p>
+
+<h3 id="speed-limits">Clipping of Linear Speed and Angular Velocity</h3>
+<p>To ensure the car stays within safe operating limits, we imposed boundaries. While the car is allowed to accelerate on straight sections and slow down for curves, we ensure that its speed remains within a defined range, preventing excessive acceleration that could lead to instability.</p>
+<p>This careful control of speed and steering maintains a balance between performance and stability, helping the car navigate both straight sections and curves efficiently without losing control.</p>
+
+<hr />
+<h3 id="ackerman-model-implementation">Ackerman Model</h3>
+<p>During the development process, we transitioned from a simple differential steering model to a more realistic Ackerman steering model. This switch introduced new challenges that required us to rethink how the car handled turns and responded to the PID controller.</p>
+
+<h4 id="steering-dynamics">Changes in Steering Dynamics</h4>
+<p>The Ackerman model, which more accurately simulates the way real cars steer, adjusts the angle of each wheel differently during turns. This resulted in a significant change in the car's behavior, especially on sharp curves, where the previous PID parameters became less effective. The car would either oversteer or understeer, depending on the error and speed, leading to loss of control.</p>
+
+<h4 id="pid-re-tuning">Re-tuning the PID Controller for Ackerman Model</h4>
+<p>To make the Ackerman steering model work effectively, we had to manually retune the PID parameters. This involved adjusting the proportional, derivative, and integral values to maintain stable control, as the car's dynamics had changed significantly.</p>
+
+<ul>
+    <li><strong>Kp (Proportional)</strong>: We reduced the proportional gain to prevent the car from overreacting to small errors, which had become more noticeable with the Ackerman model. Lowering <strong>Kp</strong> helped minimize excessive steering corrections and kept the car's path smoother.</li>
+    <li><strong>Kd (Derivative)</strong>: We also decreased the derivative term to avoid making the car's response too slow. A higher <strong>Kd</strong> value caused the car to hesitate during turns, leading to delayed reactions. Reducing it allowed for quicker, yet controlled, steering adjustments.</li>
+    <li><strong>Ki (Integral)</strong>: The integral term remained small, as its role was to correct small, persistent errors that could cause the car to drift. In this case, it helped to address minor deviations that accumulated over time.</li>
+</ul>
+
+<h4 id="ackerman-speed">Impact on Speed and Control</h4>
+<p>Despite maintaining the same linear speed as before, the Ackerman model caused the car to move more slowly overall due to the nature of its steering. This, however, turned out to be beneficial, as it provided greater stability and control, especially on sharp turns. By reducing the car's tendency to oversteer and keeping the steering smooth, we avoided the risk of the car losing control at high speeds, ultimately improving the car's performance on the track.</p>
+
+<p>In summary, the Ackerman model improved the realism of the car's behavior and made it safer to handle, though at the cost of some speed. The trade-off was acceptable, as it ensured the car could navigate the track more reliably without sacrificing control.</p>
+
+
+<hr />
+<h3 id="key-challenges-and-solutions">Key Challenges and Solutions</h3>
+
+<ol>
+    <li><strong>Noise and inconsistencies in image detection</strong>: One of the challenges was dealing with noise or inconsistent detection of the red line in the images. Variations in lighting, shadows, or even slight variations in the camera angle sometimes caused false positives or gaps in the detection of the red pixels. To mitigate this, we considered smoothing techniques, such as averaging the detected positions over a few frames to reduce jitter.</li>
+    <li><strong>Handling sharp turns</strong>: Initially, when the car approached a curve, the PID controller struggled to react fast enough to the large error values, especially at high speeds. Careful tuning of the proportional (Kp) and derivative (Kd) terms ensured the car could handle both gentle and sharp turns smoothly.</li>
+    <li><strong>Balancing speed and control</strong>: Speed is a critical factor in racing, but increasing the car's speed also made it harder to maintain stable control. We adjusted the car's maximum speed dynamically, slowing down for curves and accelerating on straight sections, without sacrificing overall lap time.</li>
+</ol>
+
+<hr />
+
+<h3 id="results-and-performance">Results and Performance</h3>
+<p>After implementing and tuning the PID controller, the car was able to complete a lap around the circuit efficiently, staying in the center of the lane in most tests. Lap times improved significantly once the parameters were optimized to allow the car to reach its maximum speed without losing stability.</p>
+
+<hr />
 
 <h3 id="video-demonstration">Video Demonstration</h3>
 <p>Below is a video showing the car completing a lap around the circuit using the developed PID controller:</p>
