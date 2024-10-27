@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P3 - Obstacle Avoidance</title>
+    <!-- Link to CSS file -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons and favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+    <header>
+        <h1>MOBILE ROBOTICS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+            <header class="post-header">
+                <h1 class="post-title p-name" itemprop="name headline">P3 - Obstacle Avoidance</h1>
+                <p class="post-meta">
+                    <time class="dt-published" datetime="2024-10-27T07:49:08+02:00" itemprop="datePublished">Oct 27, 2024</time>
+                </p>
+            </header>
+
+            <div class="post-content e-content" itemprop="articleBody">
+                <h2 id="practice-3-obstacle-avoidance">Practice 3: Obstacle Avoidance Using VFF</h2>
+
+                <h3 id="objective">Objective</h3>
+                <p>The goal of this practice is to implement a local navigation algorithm based on the "Virtual Force Field" (VFF) for a Formula 1 car that navigates through the center of a circuit while avoiding obstacles along the way.</p>
+
+                <hr />
+
+                <h3 id="algorithm-overview">Algorithm Overview</h3>
+                <p>The VFF navigation algorithm allows the car to generate forces based on its environment. Each obstacle produces a repulsive force, while the target waypoint generates an attractive force. The resultant force dictates the car's velocity and direction.</p>
+
+                <h4 id="force-vectors">Force Vectors</h4>
+                <ul>
+                    <li><strong>Attractive Force:</strong> This vector guides the car towards the next waypoint.It is proportional to the distance from the waypoint, allowing the car to navigate towards it efficiently. A scaling factor for the attractive force is introduced to ensure that the car does not overshoot or miss the target waypoint.</li>
+                    <li><strong>Repulsive Force:</strong> This vector pushes the car away from any detected obstacles. This force pushes the car away from obstacles detected by the laser sensor. It is computed based on the distance to the nearest obstacle, with closer obstacles exerting a stronger repulsive force.</li>
+                    <li><strong>Total Force:</strong> The combined vector of attractive and repulsive forces determines the final movement commands for the car.</li>
+                </ul>
+                <p>It is crucial to parameterize the composition of these vectors to prioritize either avoidance or speed depending on the situation.</p>
+
+                <hr />
+
+                <h3 id="repulsive-force">Repulsive Force</h3>
+                <p>The repulsive force in the Virtual Force Field (VFF) algorithm is crucial for ensuring that the car effectively avoids obstacles. It is calculated based on the distance between the car and detected obstacles using laser sensors.</p>
+
+                <h4>Formula</h4>
+                <p>The repulsive force (<em>F<sub>r</sub></em>) is computed using the formula:</p>
+                <pre><code>F<sub>r</sub> = F<sub>REPULSIVE</sub> × (R<sub>RADIUS</sub> - d)</code></pre>
+                <p>Where:</p>
+                <ul>
+                    <li><strong>F<sub>REPULSIVE</sub></strong> is a scaling factor that determines the strength of the repulsive force.</li>
+                    <li><strong>R<sub>RADIUS</sub></strong> defines a safe distance around the car; closer obstacles than this distance will influence the car's movement.</li>
+                    <li><strong>d</strong> is the distance to the nearest obstacle, obtained from the laser sensor data.</li>
+                </ul>
+                <hr />
+
+                <h4>Force Components</h4>
+                <p>Once the magnitude of the repulsive force is calculated, it is decomposed into its x and y components:</p>
+                <pre><code>F<sub>r_x</sub> = -F<sub>r</sub> × cos(θ)</code></pre>
+                <pre><code>F<sub>r_y</sub> = -F<sub>r</sub> × sin(θ)</code></pre>
+                <p>Where θ is the angle corresponding to the direction of the laser ray pointing towards the obstacle. This helps determine the exact direction in which the car should move away from the obstacle.</p>
+                <hr />
+
+                <h4>Additional Scaling</h4>
+                <p>To enhance the car's responsiveness, there is a scaling factor to the y-component of the repulsive force if the obstacle is directly in front of it or within specific limits. This ensures that the car can navigate effectively and make necessary adjustments.</p>
+                <hr />
+                <hr />
+
+                <h3 id="speed-control">Speed Control</h3>
+                <p>The speed of the car is dynamically adjusted based on the surrounding environment. While the objective is to traverse the circuit quickly, excessive speed can lead to collisions. Thus, the algorithm ensures that the car maintains a balance between speed and safety.</p>
+
+                <hr />
+
+                <h3 id="transforming-coordinates">Transforming Coordinates</h3>
+                <p>The algorithm converts global coordinates (absolute positions) of the target waypoint into a relative coordinate system based on the robot's current pose (position and orientation). This transformation simplifies the calculations needed to determine the forces acting on the car.</p>
+                
+                <hr />
+
+                <h3 id="target-management">Target Management</h3>
+                <p>When the car successfully navigates to a waypoint, the algorithm marks the target as reached and retrieves the next target for navigation. This loop continues until the car completes its circuit.</p>
+                <hr />
+
+                <h3 id="key-challenges">Key Challenges</h3>
+                <ol>
+                    <li><strong>Noise and Sensor Accuracy:</strong> Fluctuations in laser readings can lead to inconsistent obstacle detection. Implementing filtering techniques helps in minimizing this issue.</li>
+                    <li><strong>Sharp Turns:</strong> Navigating tight corners requires quick adjustments. Tuning the parameters of the attractive and repulsive forces ensures that the car can handle sharp turns efficiently.</li>
+                    <li><strong>Balancing Speed and Safety:</strong> While speed is essential, it should not compromise the car's ability to avoid collisions. The algorithm adapts the speed based on the environment's complexity.</li>
+                </ol>
+
+                <hr />
+
+                <h3 id="results-and-performance">Results and Performance</h3>
+                <p>Upon implementing the VFF algorithm, the car successfully completed laps around the circuit while avoiding obstacles. The tuning of the force vectors significantly improved its ability to navigate tight corners and stay on course.</p>
+
+                <hr />
+
+                <h3 id="video-demonstration">Video Demonstration</h3>
+                <p>Below is a video showing the car navigating the circuit using the VFF algorithm:</p>
+                <section id="video-section">
+                    <h2>Watch the Car in Action</h2>
+                    <div class="video-container">
+                        <video src="/assets/videos/obstacle_avoidance.webm" controls width="600"></video>
+                    </div>
+                </section>
+
+            </div>
+            <a class="u-url" href="/jekyll/update/2024/10/27/P3-Obstacle-Avoidance.html" hidden></a>
+        </article>
+    </main>
+    <footer>
+        <p>&copy; 2024 MOBILE ROBOTICS</p>
+    </footer>
+</body>
+</html>
+
