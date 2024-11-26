@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P4 - Path Planning</title>
+    <!-- Link to CSS file -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons and favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+    <header>
+        <h1>MOBILE ROBOTICS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+            <header class="post-header">
+                <h1 class="post-title p-name" itemprop="name headline">P4 - Path Planning</h1>
+                <p class="post-meta">
+                    <time class="dt-published" datetime="2024-11-26T10:00:00+02:00" itemprop="datePublished">Nov 26, 2024</time>
+                </p>
+            </header>
+
+            <div class="post-content e-content" itemprop="articleBody">
+                <h2 id="practice-4-path-planning">Practice 4: Path Planning Using A* Algorithm</h2>
+                <h3 id="objective">Objective</h3>
+                <p>The objective of this practice is to program a global navigation algorithm based on "Gradient Path Planning" (GPP) for a taxi in a city environment.  The aim is for the robot to efficiently find the shortest collision-free path from its starting position to a specified goal while navigating a grid-based environment.</p>
+
+                <hr />
+
+                <h3 id="algorithm-overview">Algorithm Overview</h3>
+                <p>The global navigation algorithm implemented in this practice combines three main components to guide the taxi to its destination efficiently while avoiding obstacles. Below is an explanation of the steps involved:</p>
+
+                <h4 id="wave-front-algorithm">1. Wave Front Algorithm (WFA)</h4>
+                <p>The algorithm starts from the target point selected by the user and uses a <strong>Breadth-First Search (BFS)</strong> to expand through all the free cells in the map. The process is as follows:</p>
+                <ul>
+                    <li>Each visited cell is assigned a cost value proportional to the accumulated distance from the target.</li>
+                    <li>This cost value represents the "difficulty" of reaching the target from that cell: the farther the cell is from the target, the higher the cost.</li>
+                </ul>
+
+                <h4 id="obstacle-expansion">2. Obstacle Expansion</h4>
+                <p>To avoid routes that pass too close to obstacles, an additional procedure was implemented to penalize cells near walls or obstacles. This method:</p>
+                <ul>
+                    <li>Adds an extra cost to cells adjacent to obstacles.</li>
+                    <li>Propagates this penalty up to three cells deep, with decreasing values (more penalty the closer the cell is to the obstacle).</li>
+                </ul>
+                <p>This ensures that the taxi favors paths that maintain a safe distance from obstacles, enhancing overall safety during navigation.</p>
+
+                <h4 id="gradient-based-navigation">3. Gradient-Based Navigation</h4>
+                <p>After generating the cost map, the taxi employs a reactive approach based on the gradient to navigate towards the target:</p>
+                <ul>
+                    <li>The taxi examines its neighboring cells within its immediate surroundings.</li>
+                    <li>It selects the direction leading to the cell with the lowest cost, effectively following the "gradient descent."</li>
+                    <li>This method does not require pre-planning the entire route, making it more flexible to adapt in the environment.</li>
+                </ul>
+                <p>Gradient-based navigation allows the taxi to adjust dynamically and efficiently, ensuring smooth and continuous motion towards its goal.</p>
+                <hr />
+
+                <h3 id="grid-representation">Grid Representation</h3>
+                <p>The environment is modeled as a grid where each cell represents a discrete position. Cells can either be:</p>
+                <ul>
+                    <li><strong>Free:</strong> The robot can move through these cells.</li>
+                    <li><strong>Occupied:</strong> Represent obstacles that the robot must avoid.</li>
+                </ul>
+                <p>The algorithm calculates paths by traversing free cells while avoiding occupied ones.</p>
+
+                <hr />
+                <h3 id="key-challenges">Key Challenges</h3>
+                <p>Throughout the implementation of the navigation system, several challenges arose that required attention and adjustments:</p>
+                <ul>
+                    <li><strong>Incorrect Cost Calculation in Diagonal Directions:</strong> Initially, the cost calculation for diagonal directions was inaccurate, and without normalization, it caused the taxi to operate only in the upper half of the map. This issue was resolved by properly adjusting the cost calculation, ensuring that the taxi could navigate the entire map.</li>
+                    
+                    <li><strong>Obstacle Penalty Field Adjustment:</strong> The penalty field for obstacles had to be fine-tuned to ensure that the taxi maintained enough space to pass through, without getting too close to the walls. Additionally, it was important to treat each cell adjacent to obstacles separately to prevent the accumulation of excessive costs, which could lead to inefficient pathfinding.</li>
+                    
+                    <li><strong>Gradient-Based Navigation Delay:</strong> In the gradient-based navigation, considering only the next adjacent cell caused the taxi to not react quickly enough, often leading to suboptimal paths. This issue was addressed by adjusting the navigation logic to consider a broader range of neighboring cells, ensuring a more responsive and accurate pathfinding system.</li>
+                    
+                    <li><strong>Obstacle Cost and Shortest Path Selection:</strong> A significant challenge in the gradient-based navigation was that obstacles were initially given a cost of 0, which made the algorithm mistakenly consider paths through obstacles as the shortest. To solve this, a high penalty was added to cells containing obstacles or outside the boundaries, preventing the algorithm from selecting these cells.</li>
+                    
+                    <li><strong>Turning Issues:</strong> Another challenge arose when navigating sharp turns, where the taxi would often make excessive or abrupt turns. To address this, the turning behavior was normalized to ensure smoother and more controlled navigation around corners.</li>
+                </ul>
+
+                <hr />
+
+
+                <h3 id="results-and-performance">Results and Performance</h3>
+                <p>After implementing the algorithm, the robot successfully navigated to its goal while avoiding obstacles. The path optimization techniques further enhanced the robot's efficiency, resulting in shorter travel times and smoother movements.</p>
+
+                <hr />
+
+                <h3 id="video-demonstration">Video Demonstration</h3>
+                <p>Below is a video showing the robot successfully navigating:</p>
+                
+            </div>
+            <a class="u-url" href="/jekyll/update/2024/11/27/P4-Path-Planning.html" hidden></a>
+        </article>
+    </main>
+    <footer>
+        <p>&copy; 2024 MOBILE ROBOTICS</p>
+    </footer>
+</body>
+</html>
+
