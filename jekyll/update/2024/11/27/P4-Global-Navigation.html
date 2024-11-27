@@ -35,7 +35,7 @@
             <header class="post-header">
                 <h1 class="post-title p-name" itemprop="name headline">P4 - Global Navigation</h1>
                 <p class="post-meta">
-                    <time class="dt-published" datetime="2024-11-26T10:00:00+02:00" itemprop="datePublished">Nov 26, 2024</time>
+                    <time class="dt-published" datetime="2024-11-27T10:00:00+02:00" itemprop="datePublished">Nov 26, 2024</time>
                 </p>
             </header>
 
@@ -98,6 +98,26 @@
                 </ul>
 
                 <hr />
+                
+                <h3 id="highlights">Highlights</h3>
+              
+                <ul>
+                    <li>
+                        <strong>Using a Deque Instead of a Regular Queue:</strong>
+                        <p>The Wave Front Algorithm (WFA) used a <code>deque</code> (double-ended queue) instead of a regular queue. This choice was motivated by its efficiency and flexibility in managing elements. While the algorithm primarily performs a Breadth-First Search (BFS), the ability to efficiently add or remove elements from both ends of the <code>deque</code> made it ideal for handling edge cases during map traversal and cost propagation.</p>
+                    </li>
+                    
+                    <li>
+                        <strong>Dynamic Target Selection:</strong>
+                        <p>The system allows for a new target to be selected dynamically after reaching the previous one. This feature adds flexibility, enabling the robot to handle multiple tasks or select a new destination based on user input without restarting the algorithm.</p>
+                    </li>
+                    
+                    <li>
+                        <strong>Linear Speed Adjustment Based on Angular Error:</strong>
+                        <p>To ensure smooth motion and reduce overshooting during turns, a regulator was implemented to adjust the linear speed of the robot. As the angular error (the difference between the robot's current heading and the direction towards the target) increases, the linear speed is proportionally reduced. This adjustment allows the robot to make sharper turns when necessary without compromising stability or control.</p>
+                    </li>
+                </ul>
+
 
 
                 <h3 id="results-and-performance">Results and Performance</h3>
@@ -107,9 +127,16 @@
 
                 <h3 id="video-demonstration">Video Demonstration</h3>
                 <p>Below is a video showing the robot successfully navigating:</p>
+                <section id="video-section">
+                    <h2>Watch the Car in Action</h2>
+                    <div class="video-container">
+                        <video src="/assets/videos/taxi.webm" controls width="600"></video>
+                    </div>
+                </section>
+
                 
             </div>
-            <a class="u-url" href="/jekyll/update/2024/11/27/P4-Path-Planning.html" hidden></a>
+            <a class="u-url" href="/jekyll/update/2024/11/27/P4-Global-Navigation.html" hidden></a>
         </article>
     </main>
     <footer>
