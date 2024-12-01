@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P3 - Vending Machine </title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+    <header>
+        <h1>EMBEDDED AND REAL-TIME SYSTEMS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+            <header class="post-header">
+                <h1 class="post-title p-name" itemprop="name headline">P3 - Vending Machine</h1>
+                <p class="post-meta">
+                    <time class="dt-published" datetime="2024-12-01T10:00:00+02:00" itemprop="datePublished">Dic 1, 2024</time>
+                </p>
+            </header>
+
+            <div class="post-content e-content" itemprop="articleBody">
+                <h2 id="practice-3-embedded-systems">Practice 3: Real-Time Embedded Systems Implementation</h2>
+                <h3 id="objective">Objective</h3>
+                <p>The goal of this practice is to implement a real-time embedded system using an Arduino platform, which controls various sensors and components. The system is designed to detect a presence, measure environmental conditions such as temperature and humidity, and provide a user interface through a menu system. The robot responds to user inputs via a joystick and button, and its actions are managed through a state machine. This practice demonstrates the integration of sensors, interrupts, multithreading, and watchdog mechanisms for a robust and responsive system.</p>
+
+                <hr />
+
+                <h3 id="sensors-and-components">Sensors and Components</h3>
+                <p>In this project, we utilize the following sensors and components:</p>
+                <ul>
+                    <li><strong>Ultrasonic Sensor:</strong> Used to detect the presence of a person by measuring the distance. The sensor's trigger and echo pins are connected to analog pins A5 and 8, respectively.</li>
+                    <li><strong>DHT11 Sensor:</strong> Measures temperature and humidity. It is connected to pin 13 of the Arduino.</li>
+                    <li><strong>Joystick:</strong> A joystick is used to navigate through the menu. The joystick's vertical and horizontal movements are connected to pins A0 and A1, and the button is connected to pin 3.</li>
+                    <li><strong>Button:</strong> A button is used to trigger different actions, such as entering the administration menu or resetting the service state. The button is connected to pin 2.</li>
+                    <li><strong>LEDs:</strong> Two LEDs (connected to pins 9 and 10) provide feedback, such as indicating the system’s operational status.</li>
+                    <li><strong>LCD Screen:</strong> An LCD screen is used to display information like temperature, humidity, and system status. It is connected to the Arduino using pins 4, 5, 6, 7, 11, and 12.</li>
+                </ul>
+
+                <div id="sensor-setup">
+                    <h3 id="sensor-setup-img">Sensor Setup</h3>
+                    <p>Here is an image of how the sensors and components are connected to the Arduino:</p>
+                    <img src="/assets/images/practica3.png" alt="Sensor Setup" width="600">
+                </div>
+
+                <hr />
+
+                <h3 id="code-overview">Code Overview</h3>
+                <p>The system is implemented using a state machine, which transitions between various states based on sensor inputs and button presses. Below is an overview of the key states in my code:</p>
+
+                <h4 id="set-up">1. SetUp</h4>
+                <p>In this state, the system initializes all the components and prepares the necessary configurations for operation. The serial communication is started for debugging, and a 2-second watchdog timer is enabled to handle potential system failures. A button is configured with an interrupt to detect state changes. The menu system is initialized with its interruptions, and threads are added to the thread controller to manage specific tasks such as state handling, sensor readings, LED control, and menu navigation. Each thread is assigned an update interval and an initial enabled/disabled state. Finally, the system starts in the INIT state, ensuring everything is ready for further operation.</p>
+                <h4 id="init-state">2. INIT State</h4>
+                <p>During the <code>INIT</code> state, the system runs its initialization procedures.</p>
+                <p>The InitThread is configured with a set number of LED blinks and an interval of 1 second. Each time the thread runs, the LED blinks while the LCD shows the message "CARGANDO ..." (loading). After completing the required number of blinks, the LED turns off, the LCD is cleared, and the initialization is marked as complete.</p>
+                <p>In the main program, the INIT state continuously checks whether the initialization is complete. Once the process finishes the current state is updated to WAITING.</p>
+               
+
+                <h4 id="waiting-state">3. WAITING - Waiting for a Client</h4>
+                <p>The system enters this state when it is ready to detect a presence. The ultrasonic sensor monitors the area, and once a person is detected close, the system transitions to the next state and we enable the thread that will display humidity and temperature, setting its duration.</p>
+
+                <h4 id="showing-temp-humidity">4. SHOWING_TEMP_HUMIDITY - Displaying Temperature and Humidity</h4>
+                <p>When a client is detected, the system enters this state, where the temperature and humidity values are shown on the LCD. After displaying the data for 5 seconds, it moves to the service menu.</p>
+                
+                <h4 id="service-state">5. SERVICE - Service Menu</h4>
+                  <p>
+                  In this state, the system allows the user to navigate through the menu. When an option is selected (by pressing the joystick button), the preparation process begins. The following steps occur:
+                  </p>
+                  <ul>
+                      <li>The menu system is disabled, and the display is cleared.</li>
+                      <li>The LED thread is reset to prepare for gradual intensity adjustments.</li>
+                      <li>A random preparation time (between 4 and 8 seconds) is chosen.</li>
+                      <li>The LED thread is configured with the preparation time, enabled, and the system transitions to the <strong>Preparation State</strong>.</li>
+                  </ul>
+
+                  <h4 id="preparation-state">6. PREPARATION - Preparing the Product</h4>
+                  <p>
+                  This state manages the preparation process for the chosen menu option. Here's what happens:
+                  </p>
+                  <ul>
+                      <li>If entering this state for the first time, the display shows a "PREPARING" message.</li>
+                      <li>The LED gradually increases its intensity based on the preparation time set in the previous state.</li>
+                      <li>Once the preparation is complete:
+                          <ul>
+                              <li>The LED stops, and the display shows "REMOVE DRINK."</li>
+                              <li>This message remains visible for 3 seconds, with the time tracked using millis().</li>
+                          </ul>
+                      </li>
+                      <li>After 3 seconds:
+                          <ul>
+                              <li>The display is cleared, and the menu system is re-enabled for the next selection.</li>
+                              <li>Preparation-related variables are reset, and the system transitions back to the <strong>Service State</strong>.</li>
+                          </ul>
+                      </li>
+                  </ul>
+                  <p>
+                  This state ensures smooth preparation and user guidance throughout the process.
+                  </p>
+                <h4 id="interrupts">7. Interrupts in the Program</h4>
+                <p>
+                The program uses interruptions to handle button presses and perform actions based on the press duration. It uses the millis() function to debounce the button and measure press duration, controlling two flags:
+                </p>
+                <ul>
+                    <li><code>button_pressed</code>: Activated when the button is pressed for 2–3 seconds to reset the service state (to SHOWING_TEMP_HUMIDITY). Only can be use in SHOWING_TEMP_HUMIDITY, SERVICE and PREPARATION states.</li>
+                    <li><code>button_admin</code>: Activated when the button is pressed for 5 seconds or more to enter or exit Admin mode. This can be use in any State of the program.</li>
+                </ul>
+
+                <h5>Benefits:</h5>
+                <ul>
+                    <li><strong>Non-blocking:</strong> The interrupt ensures other tasks continue while waiting for button input.</li>
+                    <li><strong>Accurate Timing:</strong> Press durations are measured using millis().</li>
+                </ul>
+
+
+                <h4 id="admin-state">8. ADMIN - Administration Menu</h4>
+                            <p>In the <strong>ADMIN</strong> state, the system enters an administration mode where the user can manage various settings of the system, such as displaying temperature, distance, or modifying prices. Here’s how it works:</p>
+
+                <h5>LED Indicators</h5>
+                <p>When the system is in admin mode, both leds are turned on to indicate that the system is in the administrative mode.</p>
+
+                <h5>Interruptions</h5>
+                <p>Interrupts are enabled to handle button presses while navigating through the menu, ensuring that the system responds immediately to user input.</p>
+
+                <h5> Menu Navigation</h5>
+                <p>The user can navigate the menu to select different options:</p>
+                <ul>
+                    <li><strong>View Temperature</strong>: Displays the current temperature.</li>
+                    <li><strong>View Distance</strong>: Displays the current distance.</li>
+                    <li><strong>View Counter</strong>: Displays a counter which show how much time the program stays on.</li>
+                    <li><strong>Modify Prices</strong>: Allows the user to edit the prices of products.</li>
+                </ul>
+
+                <h5>Returning to the Main Menu</h5>
+                <p>The user can select the "Back to menu" option (left in joystick) to return to the main menu. When this happens, the system:</p>
+                <ul>
+                    <li>Stops any secondary threads like temperature, distance, and time counter displays.</li>
+                    <li>Resets the state back to the main menu.</li>
+                </ul>
+
+                <h5>Price Modification</h5>
+                <p>When the user selects the "Modify prices" option:</p>
+                <ul>
+                    <li>The user can adjust the prices of menu items using the joystick.</li>
+                    <li>Once price changes are made, the system saves the new prices using th button of the joystick and returns to the admin menu.</li>
+                </ul>
+
+                <h5>Transitions</h2>
+                <p>The system uses threads to manage transitions between the admin mode and the prices menu. It relies on flags to change softly between displaying the main menu and submenus (for price editing or other settings).</p>
+
+
+                <h4 id="threads">9. Threads</h4>
+                <p>The system uses a multithreading approach to handle different tasks concurrently. Each task (such as reading temperature, showing the menu, or controlling LEDs) is assigned to a separate thread. These threads are managed by a thread controller, ensuring that each task is executed at the appropriate intervals.</p>
+
+                <h4 id="watchdog">10. Watchdog</h4>
+                <p>The watchdog is configured to reset the system in case it becomes unresponsive. If the system does not reset the watchdog timer within 2 seconds, the system will automatically reset, ensuring reliability in real-time applications.</p>
+
+                <hr />
+
+                <h3 id="results-and-performance">Results and Performance</h3>
+                <p>After implementing the system, it was tested for responsiveness and reliability. The sensor readings and menu navigation worked smoothly, with minimal delays. The system was able to handle button presses and sensor inputs in real time, making it suitable for embedded systems in real-world applications.</p>
+
+                <hr />
+
+                <h3 id="video-demonstration">Video Demonstration</h3>
+                <p>Below is a video showing the system in action, demonstrating the menu navigation, sensor readings, and state transitions:</p>
+               <section id="video-section">
+                    <h2>Watch the Vending Machine in Action</h2>
+                    <div class="video-container">
+                        <video src="/assets/videos/practica3.webm" controls width="600"></video>
+                    </div>
+                </section>
+
