@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P5 - Monte Carlo Laser Localization</title>
+    <!-- Link to CSS file -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons and favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+    <header>
+        <h1>Mobile Robotics</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+            <header class="post-header">
+                <h1 class="post-title p-name" itemprop="name headline">P5 - Monte Carlo Laser Localization</h1>
+                <p class="post-meta">
+                    <time class="dt-published" datetime="2024-12-22T10:00:00+02:00" itemprop="datePublished">Dec 22, 2024</time>
+                </p>
+            </header>
+
+            <div class="post-content e-content" itemprop="articleBody">
+                <h2 id="practice-5-monte-carlo">Practice 5: Monte Carlo Laser Localization</h2>
+                <h3 id="objective">Objective</h3>
+                <p>The objective of this practice is to implement a Monte Carlo Localization (MCL) algorithm for estimating the position of a robot in a given map using laser sensor data. The robot will localize itself by comparing theoretical laser scans from particle hypotheses with the actual laser measurements it receives.</p>
+                
+                <hr />
+
+                <h3 id="particle-initialization">Particle Initialization</h3> <p>In this step, particles must be generated randomly across the map. The particles are distributed uniformly over the free space of the map without using the robot's actual pose. The key challenge here is to ensure that the particles are spread across the map and not concentrated around some position.</p> <p>We initialize the particles by first identifying all free cells on the map, then randomly selecting cells for the particles. Gaussian noise is added to the positions and orientations of the particles to simulate uncertainty in the initial pose. This ensures that the particles are spread throughout the map, providing a broad initial distribution that will later be refined as the algorithm processes sensor data.</p>
+
+                <hr />
+                
+                <h3 id="particle-propagation">Particle Propagation</h3> 
+                <p>Once the particles are initialized, the next step is to propagate them in order to estimate the robot's movement over time. The idea behind this is to update the position and orientation (pose) of each particle based on the robot’s movement and add some randomness to account for the inherent uncertainty of real-world movement.</p> <p>In this process, we estimate the displacement of the robot from its previous position. This is done by comparing the current pose of the robot with its last known pose, obtaining the changes in position (delta x and delta y) and orientation (delta yaw). These changes represent the robot’s movement between updates.</p> <p>To propagate the particles, we apply the same movement to each of them. However, since there is always some uncertainty in the robot's motion (e.g., due to sensor noise, wheel slippage, or inaccuracies in control), we introduce random noise to the particles’ movement.</p> <p>After the movement, we ensure that the particles' orientations are kept within a valid range (between 0 and 2π radians). This helps maintain consistency in the representation of the particles' poses.</p> <p>Additionally, it is crucial to ensure that all particles remain within valid areas of the map. If a particle ends up outside the map boundaries or in an obstacle, it is adjusted so that its position stays within the free space of the map. This ensures that particles do not "wander" into invalid areas, and their estimated positions stay realistic.</p> <p>This approach helps in maintaining a spread of particles that represent possible robot locations over time, allowing the system to keep track of multiple hypotheses about the robot's actual position in a noisy environment.</p>
+                <hr />
+                
+                <h3 id="particle-weighting">Particle Weighting</h3> 
+                <p>Once the particles have been propagated, the next step is to calculate the weight (or probability) of each particle. This weight represents how well a given particle’s pose matches the actual robot’s measurements, allowing us to evaluate the likelihood of each particle being the correct representation of the robot's state.</p> <p>To calculate the weight of a particle, we use a Gaussian model. Specifically, for each particle, we compare its virtual laser scan (generated from the particle’s pose) with the real laser scan obtained by the robot's sensors. The difference between the two laser scans is used to compute an error, which is then transformed using a Gaussian function. The resulting value represents the probability of that particle being close to the actual robot's position.</p> <p>The Gaussian function applied here takes the error (the squared difference between the real and virtual laser scans) and converts it into a probability, where smaller errors result in higher probabilities. This is based on the assumption that the closer the particle’s predicted scan is to the real scan, the more likely it is that the particle accurately represents the robot's true state.</p> <p>Since the calculation of the weight for each particle involves generating the virtual laser scan and computing the error, this process can be computationally expensive, especially when there are many particles. To speed up the calculation, we use parallel processing with the `multiprocessing` module. This allows us to compute the weights for all particles simultaneously, instead of one at a time, significantly reducing the time required for this step.</p> <p>Additionally, to organize and manage the tasks for each particle efficiently, we use `itertools.repeat` to provide the real laser scan to each task, ensuring that each particle’s weight is computed using the same set of real sensor data.</p> <p>After calculating the weights for all particles, we perform a resampling step. This step helps avoid particle degeneracy, where only a few particles dominate the process.</p>
+                
+                <hr />
+                
+                <h3 id="particle-resampling">Particle Resampling</h3> 
+                <p>After calculating the weights of the particles, the next step is resampling, which helps to focus on the particles with higher weights and reposition those with lower weights. This is essential to avoid the "particle degeneracy" problem, where most of the particles have very low weights, leading to poor state estimation. Resampling ensures that the particles are spread out in the map in a way that reflects the most probable robot poses.</p> <p>The process of resampling involves two main tasks: repositioning particles with low weights and redistributing particles with high weights. Here’s how we approach this:</p> <ul> <li><strong>Identifying Low-Weight Particles:</strong> We first identify particles that have weights below a certain threshold. These particles likely do not represent the robot's true position and should be reallocated. To limit the number of particles to process, we restrict the number of low-weight particles to a maximum.</li> <li><strong>Identifying High-Weight Particles:</strong> We then identify particles with the highest weights. These particles are assumed to be the most accurate representations of the robot’s current pose.</li> </ul> <p>Once we have these two sets of particles, the approach varies based on the maximum weight. If any particle has a weight greater than a certain threshold (0.8), we redistribute low-weight particles near the high-weight particles. This helps concentrate particles around the most likely positions. If the maximum weight is lower than the threshold, we redistribute low-weight particles randomly across the map.</p> <p>The redistribution works as follows:</p> <ul> <li><strong>Redistribution by Weights:</strong> If the weights are high enough, low-weight particles are positioned near high-weight particles with some added noise. This keeps the particles spread in the area around the robot’s likely position.</li> <li><strong>Random Redistribution:</strong> If the weights do not meet the threshold, low-weight particles are placed randomly across the map. This helps avoid concentrating all particles around a single position, which could lead to poor exploration of the state space.</li> </ul> <p>This resampling process ensures that the filter focuses on the most probable robot poses while keeping the particle set diverse enough to explore the space. By periodically reassigning particles and adding noise, we ensure that our particle filter remains robust and avoids degeneracy.</p>
+                <hr />
+                
+                <h3 id="robot-motion">Robot Motion</h3> <p>For the algorithm to converge, the robot must move. For the robot’s movement, we implemented a simple "bump and go" strategy. This approach allows the robot to move forward until it encounters an obstacle, at which point it will stop, back up slightly, and then change direction to continue navigating. This behavior ensures basic obstacle avoidance while the robot explores its environment.</p>
+                <hr />
+
+                <h3 id="video-demonstration">Video Demonstration</h3>
+                <p>Below is a video showing the Monte Carlo Laser Localization algorithm in action:</p>
+                <section id="video-section">
+                    <h2>Watch the Localization in Action</h2>
+                    <div class="video-container">
+                        <video src="/assets/videos/p5.webm" controls width="600"></video>
+                    </div>
+                </section>
+
+            </div>
+            <a class="u-url" href="/jekyll/update/2024/12/22/P5-Monte-Carlo-Laser-Localization.html" hidden></a>
+        </article>
+    </main>
+    <footer>
+        <p>&copy; 2024 Mobile Robotics</p>
+    </footer>
+</body>
+</html>
+
