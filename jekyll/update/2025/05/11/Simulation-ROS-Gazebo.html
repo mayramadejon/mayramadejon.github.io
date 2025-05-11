@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P3 - Simulation in ROS and Gazebo</title>
+    <!-- Enlace al archivo CSS -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons y favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body class="">
+    <header>
+        <h1>MODELING AND SIMULATION OF ROBOTS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">P3 - Simulation in ROS and Gazebo</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2024-09-29T07:49:08+02:00" itemprop="datePublished">Sep 29, 2024
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 3: Integration and Study of Dynamics in Gazebo and ROS2</h2>
+
+<h3 id="objective">Objective</h3>
+<p>The main objective of this lab is to correctly configure and simulate a mobile manipulator robot in ROS 2 using a model created in Blender. The robot must include key sensors like an IMU and cameras, and be fully compatible with ROS 2 standards (REP-103 and REP-105). It should be operable via RViz and teleoperation tools, enabling manipulation tasks like picking and placing an object. Finally, motion data is recorded for power analysis and visualized through plots.</p>
+
+<hr />
+
+<h3 id="rosbag">ROSBAG</h3>
+<p>
+  During the teleoperation and motion execution phases, all relevant data from the robot's sensors and joints were recorded using <code>rosbag</code>. This data includes joint efforts and IMU measurements, which are essential for analyzing the power consumption of the pick and place mechanism.
+</p>
+<p>
+  The following file contains the complete rosbag recorded during the experiment. It can be used to generate plots for power analysis, joint performance, and wheel dynamics.
+</p>
+<p>
+  <a href="https://drive.google.com/drive/folders/1Z9Ce4JQLXRykjX1q2n95V25RyExGu7LJ?usp=sharing" target="_blank">Download ROSBAG File</a>
+</p>
+
+<h3 id="results-analysis">Results Analysis</h3>
+    <h4>Plot 1: Time vs Wheel Position</h4>
+    <img src="/assets/images/grafica_ruedas.png" alt="Wheel Position Plot" style="max-width:100%; height:auto;" />
+    <p>This plot shows the angular position of each wheel over time during the teleoperation. An initial steady increase is seen across all wheels until they reach a maximum of around 2.2 radians, indicating a straight and controlled motion. The alignment of the curves confirms synchronized movement among the wheels.</p>
+
+    <h4>Plot 2: Time vs Wheel Velocity (Acceleration)</h4>
+    <img src="/assets/images/grafica_aceleracion_ruedas.png" alt="Wheel Acceleration Plot" style="max-width:100%; height:auto;" />
+    <p>This plot illustrates the changes in rotational velocity of the wheels over time. An initial spike represents the robot’s start-up motion, followed by a few brief fluctuations—likely from minor adjustments during teleoperation. The velocity then stabilizes near zero, indicating that the robot reached its destination and came to a stop.</p>
+
+    <p>These two plots are crucial for understanding the mobile platform’s dynamic behavior and validating that the recorded data aligns with the planned trajectory and actions.</p>
+    
+    <h4>Plot 3: Time vs G-parcial (Joint Power Consumption)</h4>
+<p>This plot represents the partial power consumption (G-parcial) of each joint involved in the pick and place mechanism over time. The G-parcial is computed as the sum of torque efforts applied to the joints during motion execution, especially from the moment the arm starts the pick action until it returns to its initial position.</p>
+
+<p>We expect the following behaviors in this plot:</p>
+<ul>
+  <li>At the beginning (before the pick), the G-parcial values should be close to zero, as the arm is idle.</li>
+  <li>During the picking phase, a sharp increase in effort values is expected, as the joints apply torque to reach and grasp the object.</li>
+  <img src="/assets/images/pick_robot.png" alt="Pick Image Robot" style="max-width:100%; height:auto;" />
+  <li>While holding and moving the object, G-parcial values may remain elevated depending on the weight distribution.</li>
+  <img src="/assets/images/place_robot.png" alt="Place Image Robot" style="max-width:100%; height:auto;" />
+  <li>As the object is placed on the robot and the arm returns to its home position, a decrease in effort is expected, eventually stabilizing again near zero.</li>
+  <img src="/assets/images/place2_robot.png" alt="Place Parte 2 Image Robot" style="max-width:100%; height:auto;" />
+</ul>
+
+<p>This plot is essential to identify which joints contribute the most to power consumption and to optimize the motion planning and mechanical design for energy efficiency.</p>
+
+    
+
+
+  </div><a class="u-url" href="/jekyll/update/2025/05/11/Simulation-ROS-Gazebo.html" hidden></a>
+</article>
+
+    </main>
+    <footer>
+        <p>&copy; 2024 MOBILE ROBOTICS</p>
+    </footer>
+</body>
+</html>
