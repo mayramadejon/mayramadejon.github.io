@@ -61,12 +61,12 @@
 
 <h3 id="results-analysis">Results Analysis</h3>
     <h4>Plot 1: Time vs Wheel Position</h4>
-    <img src="/assets/images/grafica_ruedas.png" alt="Wheel Position Plot" style="max-width:100%; height:auto;" />
+    <img src="/assets/images/grafica_ruedas.png" alt="Wheel Position Plot" style="max-width:50%; height:auto;" />
     <p>This plot shows the angular position of each wheel over time during the teleoperation. An initial steady increase is seen across all wheels until they reach a maximum of around 2.2 radians, indicating a straight and controlled motion. The alignment of the curves confirms synchronized movement among the wheels.</p>
 
     <h4>Plot 2: Time vs Wheel Velocity (Acceleration)</h4>
-    <img src="/assets/images/grafica_aceleracion_ruedas.png" alt="Wheel Acceleration Plot" style="max-width:100%; height:auto;" />
-    <p>This plot illustrates the changes in rotational velocity of the wheels over time. An initial spike represents the robot’s start-up motion, followed by a few brief fluctuations—likely from minor adjustments during teleoperation. The velocity then stabilizes near zero, indicating that the robot reached its destination and came to a stop.</p>
+    <img src="/assets/images/grafica_aceleracion_ruedas.png" alt="Wheel Acceleration Plot" style="max-width:50%; height:auto;" />
+    <p>This plot illustrates the changes in rotational velocity of the wheels over time. An initial spike represents the robot’s start-up motion, followed by a few brief fluctuations, likely from minor adjustments during teleoperation. The velocity then stabilizes near zero, indicating that the robot reached its destination and came to a stop.</p>
 
     <p>These two plots are crucial for understanding the mobile platform’s dynamic behavior and validating that the recorded data aligns with the planned trajectory and actions.</p>
     
@@ -77,11 +77,11 @@
 <ul>
   <li>At the beginning (before the pick), the G-parcial values should be close to zero, as the arm is idle.</li>
   <li>During the picking phase, a sharp increase in effort values is expected, as the joints apply torque to reach and grasp the object.</li>
-  <img src="/assets/images/pick_robot.png" alt="Pick Image Robot" style="max-width:100%; height:auto;" />
+  <img src="/assets/images/pick_robot.png" alt="Pick Image Robot" style="max-width:50%; height:auto;" />
   <li>While holding and moving the object, G-parcial values may remain elevated depending on the weight distribution.</li>
-  <img src="/assets/images/place_robot.png" alt="Place Image Robot" style="max-width:100%; height:auto;" />
+  <img src="/assets/images/place_robot.png" alt="Place Image Robot" style="max-width:50%; height:auto;" />
   <li>As the object is placed on the robot and the arm returns to its home position, a decrease in effort is expected, eventually stabilizing again near zero.</li>
-  <img src="/assets/images/place2_robot.png" alt="Place Parte 2 Image Robot" style="max-width:100%; height:auto;" />
+  <img src="/assets/images/place2_robot.png" alt="Place Parte 2 Image Robot" style="max-width:50%; height:auto;" />
 </ul>
 
 <p>This plot is essential to identify which joints contribute the most to power consumption and to optimize the motion planning and mechanical design for energy efficiency.</p>
