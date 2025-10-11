@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P1 - Localized Vacuum Cleaner</title>
+    <!-- Enlace al archivo CSS -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons y favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body class="">
+    <header>
+        <h1>SERVICE ROBOTICS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">P1 - Localized Vacuum Cleaner</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">Oct 10, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 1: SERVICE ROBOTICS</h2>
+
+<h3 id="objective">Objective</h3>
+<p>The main objective of this practice is to implement the logic of a navigation algorithm for an autonomous vacuum cleaner by making use of the location of the robot. The robot is equipped with a map and knows it’s current location in it. The main objective will be to cover the largest area of ​​a house using the programmed algorithm.</p>
+
+<hr />
+
+<h3 id="map-registration">Map Registration</h3>
+<p>
+  To correctly register the map, a correspondence between the real-world coordinates from Gazebo and the pixel coordinates of the image map was established. 
+  First, several reference points were selected in the Gazebo simulation environment using the functions <code>HAL.getPose3d().x</code> and <code>HAL.getPose3d().y</code> to obtain their real positions. These same points were then identified on the map image using an image editor (GIMP) to determine their pixel coordinates.
+</p>
+
+<p>
+  The relationship between both coordinate systems can be expressed as:
+</p>
+
+<pre>
+[px]   [ a  -b  tx ] [xg]
+[py] = [ b   a  ty ] [yg]
+[ 1]   [ 0   0   1 ] [ 1]
+</pre>
+
+<p>
+  where <code>(xg, yg)</code> are the Gazebo coordinates, and <code>(px, py)</code> are the corresponding pixel coordinates in the map. 
+  The parameters <code>a</code>, <code>b</code>, <code>tx</code>, and <code>ty</code> were computed using the least squares method 
+  (<code>np.linalg.lstsq</code>) by building the matrices A and B that relate both sets of points. 
+  This approach minimizes the geometric error between the two coordinate systems and provides an optimal transformation matrix <code>T</code>.
+</p>
+
+<p>
+  Finally, this transformation is used in the function <code>gazebo_to_map(x, y)</code> to convert any robot position from Gazebo coordinates to its equivalent pixel position on the map. 
+</p>
+
+
+<h3 id="creation-of-the-navigation-grid">Creation of the Navigation Grid</h3>
+ <p>
+  The environment map is first converted to grayscale so it can be processed as a <code>uint8</code> matrix compatible with <code>WebGUI.showNumpy()</code>. 
+  Then, an erosion operation (<code>cv2.erode()</code>) is applied using a kernel equal to one third of the robot’s size, enlarging obstacles and creating a safety margin that prevents collisions.
+</p>
+
+<p>
+  Next, the map is divided into square cells (<code>CELL_SIZE</code>) slightly smaller than the robot, forming a navigation grid. 
+  Each cell is analyzed, and if more than 10% of its pixels correspond to obstacles, it is marked as blocked (black). 
+  This process converts the grayscale map into a discrete occupancy grid suitable for path planning and navigation.
+</p>
+
+<h3 id="path-planning-with-bsa">Path Planning with BSA</h3> 
+<p>
+  The BSA (Backtracking Spiral Algorithm) was implemented as the main exploration and path planning method for the robot. 
+  Its objective is to cover the largest possible area of the map by visiting every reachable free cell while avoiding obstacles and minimizing repetitions. 
+  The algorithm works on the discrete occupancy grid previously created, where each cell represents a small portion of the environment.
+</p>
+
+<p>
+  The algorithm starts from the robot’s initial cell and explores the environment following a priority of four directions (up, right, down, left). 
+  At each step, the robot checks the neighboring cells: if a free and unexplored cell is found, it becomes the next target and the current cell is marked as explored. 
+  If multiple free neighbors exist, the priority one is selected for the next move, while the others are stored as <em>return points</em> for later exploration.
+</p>
+
+<p>
+  When the robot reaches a position where no adjacent cells are available, that location is marked as a <em>critical point</em>. 
+  At this stage, the algorithm selects the nearest return point previously saved and computes the optimal path to reach it using a BFS (Breadth First Search) . 
+  This mechanism allows the robot to backtrack efficiently and continue exploring from unexplored branches, ensuring full coverage of the environment.
+</p>
+
+<p>
+  Throughout the process, each cell in the grid is visually updated on the map with different colors to represent its state: 
+  unexplored cells, critical points, return points, and next goals. 
+  This visualization helps to monitor how the exploration expands and how the robot systematically covers the entire map.
+</p>
+
+<p>
+  Once the complete plan is generated, the algorithm extracts the turning points, the cells where the direction of movement changes, which are later used by the motion controller. 
+  This step simplifies the navigation commands and improves the smoothness of the robot’s trajectory.
+</p>
+
+
+<h3 id="reactive-control">Reactive Control</h3> 
+<p>
+  The reactive control in our implementation directly adjusts the robot’s motion based on continuous feedback from its current pose in Gazebo. 
+  At every loop iteration, the robot compares its current position and orientation with the target cell of the planned path. 
+  Two PID controllers independently regulate its linear and angular velocities: one minimizes the distance to the next cell (linear error), 
+  and the other aligns the robot’s heading toward the target (angular error).
+</p>
+
+<p>
+  The controller computes proportional, derivative, and integral terms using the position and angle differences, 
+  ensuring smooth and stable motion. When the angular error is small, the robot moves forward; 
+  otherwise, it stops and rotates until it aligns correctly. This mechanism allows the robot to accurately follow 
+  the discrete path generated by the BSA exploration algorithm while continuously correcting small deviations in real time.
+</p>
+
+<section id="video-section">
+        <h2>Watch the Localized Vacuum in action</h2>
+        <div class="video-container">
+                <video src="/assets/videos/localized_vacuum.webm" controls width="600"></video>
+        </div>
+</section>
+  </div><a class="u-url" href="/jekyll/update/2025/10/10/Localized-Vacuum-Cleaner.html" hidden></a>
+</article>
+
+    </main>
+    <footer>
+        <p>&copy; MOBILE AND SERVICE ROBOTICS</p>
+    </footer>
+</body>
+</html>
