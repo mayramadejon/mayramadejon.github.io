@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P1 - Localized Vacuum Cleaner</title>
+    <!-- Enlace al archivo CSS -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons y favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body class="">
+    <header>
+        <h1>SERVICE ROBOTICS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">P2 - Rescue People</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">Oct 24, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 2: SERVICE ROBOTICS</h2>
+
+<h3 id="objective">Objective</h3>
+<p>
+The goal of this practice is to program an autonomous drone to assist in a sea search and rescue mission.
+The drone must take off from a safety boat, fly to the area where an aircraft accident occurred, and perform
+a systematic search to detect people floating on the sea. Using its downward camera and OpenCV’s Haar Cascade
+face detector, the drone identifies survivors, stores their estimated GPS positions, and returns safely to
+the boat before running out of battery. This information can then be used by rescue teams to reach the victims.
+</p>
+
+<h3 id="UTM-coordinates">Calculate coordinates in meters form UTM</h3>
+
+<p>
+Although the initial data were given in GPS coordinates, the drone API does not work directly with them.
+We converted those GPS coordinates to UTM (Universal Transverse Mercator) so they are expressed in meters.
+Working in UTM makes it trivial to compute distances and directions for navigation: to command the drone to move
+from point A to point B we simply subtract the coordinates (Δ = B_UTM − A_UTM) and obtain a displacement in meters
+that the drone must apply on its local axes. Note that UTM uses Easting (+x) and Northing (+y), while our drone control
+uses North (+x), West (+y) and Height (+z), so we also apply the appropriate axis mapping and sign conventions before
+sending position setpoints. This keeps all frames consistent and ensures accurate movement and localization.
+</p>
+
+<h3 id="state-machine">State Machine</h3>
+ <p>
+The drone behavior was implemented using a finite state machine with six main states:
+<ol>
+<li><b>TAKEOFF</b>: The drone takes off and reaches a safe height of 1.5 meters.</li>
+<li><b>GO</b>: It navigates from the boat to the target rescue area.</li>
+<li><b>SEARCH</b>: It performs a zig-zag exploration pattern while faces detections are processed and converted into real-world coordinates.</li>
+<li><b>SAFE</b>: Once the search is finished, the drone returns to the boat.</li>
+<li><b>LAND</b>: Finally, it lands safely and displays all detected victims and their coordinates.</li>
+</ol>
+
+<h3 id="sweep-algorithm">Sweep Algorithm</h3> 
+<p>
+To cover the entire search area efficiently, we implemented a <b>zig-zag sweep algorithm</b>.
+Starting from the rescue zone, the drone moves along a straight line in the X direction,
+then shifts slightly in Y, reverses direction, and continues.
+This systematic pattern guarantees full coverage of the area while maintaining a constant altitude.
+The function <code>search_persons()</code> generates all intermediate waypoints that define this trajectory.
+</p>
+
+<h3 id="face-detection">Face Detection</h3> 
+<p>
+The core of the detection system is based on OpenCV’s <code>Haar Cascade Classifier</code>.
+We used the file <code>haarcascade_frontalface_default.xml</code> to identify faces in the ventral camera image.
+Before detection, the algorithm filters out the sea by removing blue tones in the HSV color space,
+keeping only regions that are likely to contain human skin or other objects.
+To improve robustness, the image is rotated at multiple angles (0° to 360° every 20°) so that
+faces can be detected regardless of their orientation.
+Each detected face is then drawn on the image and used for position estimation.
+</p>
+
+<h3 id="calculate-real-coordinates">Calculate real coordinates</h3> 
+<p>
+Once a face is detected in the image, we estimate its real-world position relative to the drone.
+The function <code>calculate_coordinates()</code> converts image coordinates (pixels)
+to metric coordinates (meters) using a fixed conversion ratio (<code>m_per_pixel_x</code> and <code>m_per_pixel_y</code>).
+This transformation also considers the drone’s current GPS position and yaw angle,
+allowing us to calculate where the person is located in the global frame.
+If multiple detections are close to each other, they are grouped together to represent a single person.
+</p>
+
+<h3 id="battery_simulation">Battery Simulation</h3> 
+<p>
+To simulate a realistic mission scenario, we included a simple battery model that gradually decreases during flight.
+When the battery level reaches a critical threshold (20%), the drone automatically interrupts the search,
+returns to the boat, and proceeds to land safely.
+This ensures mission reliability and prevents energy exhaustion before the drone can return.
+</p>
+
+
+<section id="video-section">
+        <h2>Watch the Dron in action</h2>
+        <div class="video-container">
+                <video src="/assets/videos/Rescue-People2.webm" controls width="600"></video>
+        </div>
+</section>
+  </div><a class="u-url" href="/jekyll/update/2025/10/24/Rescue-People.html" hidden></a>
+</article>
+
+    </main>
+    <footer>
+        <p>&copy; MOBILE AND SERVICE ROBOTICS</p>
+    </footer>
+</body>
+</html>
