@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P3 - Autoparking</title>
+    <!-- Enlace al archivo CSS -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons y favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body class="">
+    <header>
+        <h1>SERVICE ROBOTICS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">P3 - Autoparking</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">Nov 7, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 3: SERVICE ROBOTICS</h2>
+
+<h3 id="objective">Objective</h3>
+<p>
+In this practice, I developed a program that allows the simulated car to park autonomously using laser sensors and the HAL interface. The main goal was to detect a suitable parking space between other vehicles and execute a sequence of movements to correctly align, reverse, and adjust the car’s final position.
+</p>
+
+<h3 id="laser-detection-and-space-calculation">Laser Detection and Space Calculation</h3>
+<p>
+To achieve autonomous parking, I used the car’s laser sensors, especially the right one, to analyze the surrounding environment and identify potential gaps. The algorithm continuously reads the distance values provided by the right laser and interprets them to determine whether there is a parked car next to us or an empty space.
+</p>
+<p>
+The process starts by validating that the received distance values are consistent and within a realistic range. Once validated, the algorithm calculates the spacing between consecutive laser points. Each laser reading corresponds to a specific angle, so knowing the average distance to the nearby car allows us to estimate how many meters correspond to each degree of laser rotation. This conversion is crucial for translating the sensor’s discrete readings into a real-world physical space.
+</p>
+
+<p>
+After obtaining this spacing value, the algorithm goes through the laser data and detects where the measured distance is significantly larger than the typical lateral distance to parked cars. This difference indicates the start of an empty gap. The program then counts how many consecutive readings maintain this “free space” condition. The longer this sequence, the larger the gap. Finally, by multiplying the number of free points by the spacing between them, the algorithm estimates the total length of the detected space in meters
+</p>
+
+<p>
+If this calculated space exceeds the minimum required length — the sum of the car’s size and a safety margin — the system concludes that the gap is large enough to park. This dynamic method allows the car to adapt to different parking scenarios without depending on fixed measurements or predefined coordinates.
+</p>
+
+<h3 id="orientation-and-yaw-control">Orientation and Yaw Control</h3>
+<p>
+The orientation of the vehicle was handled through the yaw angle. We used predefined reference yaw values for each phase of the maneuver:
+</p>
+<ul>
+  <li> YAW_ALIGN: The car aligns parallel to the parked cars before starting the search for a space.</li>
+  <li> YAW_BACK: The car rotates during the reverse parking maneuver.</li>
+  <li>YAW_AJUST: The car corrects its orientation to end up parallel to the sidewalk.</li>
+</ul>
+
+<p>
+A proportional control was implemented to minimize the yaw error, ensuring that the vehicle’s movements were smooth and precise. This control continuously adjusts the angular velocity depending on how far the car’s current orientation is from the target yaw value.
+</p>
+
+<h3 id="state-machine-and-behavior">State Machine and Behavior</h3>
+<p>
+The parking behavior was structured as a finite state machine, allowing the car to execute actions in an organized and logical sequence:
+</p>
+<ol>
+  <li><strong>ALIGN:</strong> The car aligns itself parallel to the other cars using yaw control.</li>
+  <li><strong>SEARCH:</strong> The car moves forward while analyzing laser readings to find a suitable gap.</li>
+  <li><strong>PARK:</strong> Once a gap is found, the car reverses into the space while adjusting its orientation.</li>
+  <li><strong>AJUST:</strong> The car moves slightly forward to fine-tune its position and alignment.</li>
+  <li><strong>FINALIZE:</strong> The maneuver ends and the car stops completely.</li>
+</ol>
+
+<h3 id="results-and-observations">Results and Observations</h3>
+<p>
+It successfully achieved a fully functional autoparking behavior capable of detecting spaces and performing accurate parking maneuvers in different scenarios. The system demonstrates reliable detection of free spaces, proper yaw control, and consistent behavior under varied conditions.
+</p>
+
+<p>
+As a result, we managed to make the system work in three distinct scenarios, each of which will be accompanied by a demonstration video:
+</p>
+
+<ol>
+  <li><strong>Between two cars:</strong> The classic parallel parking situation where the car detects and parks between two vehicles.<br>
+  <section id="video-section">
+        <div class="video-container">
+                <video src="/assets/videos/Two_cars.webm" controls width="600"></video>
+        </div>
+</section>
+</li>
+
+  <li><strong>Without the car in front:</strong> The car successfully parks even when there is no vehicle marking the front boundary of the space.<br>
+  <section id="video-section">
+        <div class="video-container">
+                <video src="/assets/videos/Front_car.webm" controls width="600"></video>
+        </div>
+</section>
+</li>
+
+  <li><strong>Without the car behind:</strong> The car correctly detects the space and parks, in this video it is also shown that can park even if there’s an object near the sidewalk, as long as the parking area is free.<br>
+ <section id="video-section">
+        <div class="video-container">
+                <video src="/assets/videos/Back_car.webm" controls width="600"></video>
+        </div>
+</section>
+</li>
+</ol>
+
+<p>
+These tests confirm that the developed algorithm is robust, adaptable, and capable of performing precise maneuvers even in non-ideal conditions, proving its reliability for autonomous parking tasks.
+</p>
+  </div><a class="u-url" href="/jekyll/update/2025/10/24/Rescue-People.html" hidden></a>
+</article>
+
+    </main>
+    <footer>
+        <p>&copy; MOBILE AND SERVICE ROBOTICS</p>
+    </footer>
+</body>
+</html>
