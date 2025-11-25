@@ -82,24 +82,24 @@ After each pickup or drop-off, the system resets the planner and transitions to 
 
 <h3 id="holonomic">Holonomic</h3>
 
-<h2 id="ompl">OMPL Planning</h2>
+<h4 id="ompl">OMPL Planning</h4>
 <p>
 For path planning, I used OMPL with an SE2 state space, allowing the planner to consider both position and orientation. I defined the map boundaries as the space limits and implemented a custom validity checker that reads directly from the binary map. This checker rejects any state that falls outside the map or inside an obstacle, and it adapts the robot’s collision radius depending on whether it is carrying a shelf. Once validity was defined, I created the planning problem by setting the start and goal states in pixel coordinates, and used RRTstar as the planner. After OMPL finds a solution, I extract the path from the returned matrix string, convert it into a numpy array, and visualize it in the interface for execution.
 </p>
 
-<h2 id="reactive-controller">Reactive Controller</h2>
+<h4 id="reactive-controller">Reactive Controller</h4>
 <p>
 To follow each waypoint smoothly, I implemented a reactive controller based on a PID regulation of the angular error. First, I compute the desired heading by taking the angle between the robot’s current position and the target waypoint. Then I calculate the angular difference, this error feeds a PID controller that outputs the angular velocity, allowing the robot to rotate precisely toward the goal. The linear velocity depends on the alignment: if the angular error is large, the robot stops and only rotates; once aligned, it moves forward, adapting the speed based on distance to the waypoint and whether it is carrying a shelf (in which case it moves more slowly and uses different PID gains). This reactive layer ensures stable motion, smooth turns, and safe navigation even before consulting the next waypoint.
 </p>
 
 <h3 id="ackermann">Ackermann</h3>
 
-<h2 id="ompl">OMPL Planning</h2>
+<h4 id="ompl">OMPL Planning</h4>
 <p>
 For the Ackermann robot, I implemented planning using a <strong>Reeds-Shepp state space</strong>, which allows the robot to move both forward and backward while respecting a minimum turning radius. This makes the planner suitable for car-like, non-holonomic vehicles. I defined the isStateValid() function that checks a rotated bounding rectangle around the robot or shelf at each candidate state, ensuring the path does not collide with obstacles and that the robot maintains safe clearance. The start and goal states include specific orientations; for the goal, I set a fixed yaw so the robot is properly aligned to pick up the shelf when it arrives. After RRTstar finds a solution, I interpolate the path using points, producing a smooth trajectory that can be followed by the reactive controller and visualized in the interface.
 </p>
 
-<h2 id="ackermann-controller">Reactive Controller</h2>
+<h4 id="ackermann-controller">Reactive Controller</h4>
 <p>
 The reactive controller was adapted to handle Ackermann kinematics. I calculate the angular error toward the waypoint as before, but I also check whether the waypoint is in front or behind the robot. If the waypoint is behind, the robot drives in reverse. Linear and angular velocities are computed using a PID controller for rotation, but forward and backward speeds are adjusted based on alignment and distance.
 </p>
@@ -107,6 +107,9 @@ The reactive controller was adapted to handle Ackermann kinematics. I calculate 
 <h3 id="results-and-observations">Results and Observations</h3>
 <p>
 During the experiments, I observed that the shelves tend to slide slightly while being carried due to the simulation physics, which prevents them from staying perfectly aligned. As a result, when the robot moves away after placing a shelf and starts approaching the next one, it can occasionally collide slightly with the shelf it just delivered. This happens because, when updating the map, we always assume the shelf is perfectly aligned and do not track any rotation that might have occurred during transport.
+</p>
+<p>
+Additionally, we had to implement adjustments for orientation both in Gazebo and on the map. The robot's yaw in Gazebo is not aligned with the map axes by default, so we apply a correction when transforming coordinates between frames.
 </p>
 
 <ol>
