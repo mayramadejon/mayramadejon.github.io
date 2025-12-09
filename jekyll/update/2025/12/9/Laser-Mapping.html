@@ -49,8 +49,6 @@
     The main goal of this practice is to program a robot to autonomously explore and map a warehouse using a LIDAR sensor and odometry. This involves implementing a probabilistic occupancy grid based on Bayes' rule with saturation mechanisms to handle sensor noise, developing a exploration strategy to ensure total coverage of the environment, and finally analyzing how localization noise impacts the quality of the generated map by testing the algorithm against noisy data sources.
 </p>
 
-<hr>
-
 <h3 id="probabilistic-mapping">Probabilistic Grid Mapping</h3>
 <p>
     To build a reliable map, I implemented an <strong>occupancy grid</strong> where each cell holds a value representing the probability of containing an obstacle. Since odometry is an estimation, we cannot simply treat readings as absolute truths. Instead, I used a Bayesian accumulation approach.
