@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P5 - Laser Mapping</title>
+    <!-- Enlace al archivo CSS -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons y favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body class="">
+    <header>
+        <h1>SERVICE ROBOTICS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">P5 - Laser Mapping</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">Dec 25, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 5: SERVICE ROBOTICS</h2>
+
+
+<h3 id="objective">Objective</h2>
+<p>
+    The main goal of this practice is to program a robot to autonomously explore and map a warehouse using a LIDAR sensor and odometry. This involves implementing a probabilistic occupancy grid based on Bayes' rule with saturation mechanisms to handle sensor noise, developing a exploration strategy to ensure total coverage of the environment, and finally analyzing how localization noise impacts the quality of the generated map by testing the algorithm against noisy data sources.
+</p>
+
+<hr>
+
+<h3 id="probabilistic-mapping">Probabilistic Grid Mapping</h3>
+<p>
+    To build a reliable map, I implemented an <strong>occupancy grid</strong> where each cell holds a value representing the probability of containing an obstacle. Since odometry is an estimation, we cannot simply treat readings as absolute truths. Instead, I used a Bayesian accumulation approach.
+</p>
+<p>
+    When a beam hits an obstacle, the specific cell at the impact point receives positive data (indicating an obstacle), while all cells along the ray's path receive negative data (indicating free space). A crucial part of this logic is <strong>Saturation</strong>. I implemented clamping limits for the cell values to prevent probabilistic inertia. This ensures that the map remains stable but flexible enough to correct itself if the environment changes or if a previous reading was incorrect.
+</p>
+
+<h3 id="frontier-exploration">Frontier-Based Exploration</h3>
+<p>
+    To achieve autonomous coverage, the robot needs to decide where to go without human intervention. I implemented a <strong>Frontier-Based Exploration</strong> algorithm. The system continuously analyzes the grid to find the boundaries where known free space meets unexplored territory.
+</p>
+<p>
+    Instead of moving randomly, the robot calculates the distance to all detected frontiers and selects the <strong>closest one</strong> as its next target. This strategy optimizes the exploration time and ensures the map expands methodically from the robot's current position, preventing erratic back-and-forth movements across the warehouse.
+</p>
+
+<h3 id="navigation-and-control">Path Planning and Reactive Control</h3>
+<p>
+    Once a target is selected, the robot needs to reach it safely. I used a <strong>Breadth-First Search (BFS)</strong> algorithm to calculate the shortest path through the grid. However, following a raw grid path results in jerky movement. To solve this, I added a logic to extract <strong>waypoints</strong>, identifying only the coordinates where a turn is necessary.
+</p>
+<p>
+    For the execution, I implemented a <strong>PID Controller</strong> for the angular velocity. This controller minimizes the error between the robot's heading and the target waypoint, allowing for smooth and precise turns. The linear velocity is coupled to this error: the robot only speeds up on straight lines.
+</p>
+
+<h3 id="noise-sensitivity">Sensitivity to Localization Noise</h3>
+<p>
+    A part of this exercise was testing the algorithm with noisy odometry. The results clearly illustrated the dependency of mapping on localization. While the map was crisp with standard odometry, increasing the noise caused the obstacles to "smear". This visual degradation confirmed that even a perfect mapping algorithm fails if the underlying localization data drifts too much, as the robot begins to "paint" obstacles in the wrong grid cells.
+</p>
+<ol>
+  <li><strong>Without noise:</strong><br>
+  <section id="video-section">
+        <div class="video-container">
+                <video src="/assets/videos/no_odometry.webm" controls width="600"></video>
+        </div>
+</section>
+</li>
+
+  <li><strong>With some noise (HAL.getOdom2()):</strong><br>
+  <section id="video-section">
+        <div class="video-container">
+                <video src="/assets/videos/odom22.webm" controls width="600"></video>
+        </div>
+</section>
+</li>
+ <li><strong>With noise (HAL.getOdom3()):</strong><br>
+  <section id="video-section">
+        <div class="video-container">
+                <video src="/assets/videos/odom33.webm" controls width="600"></video>
+        </div>
+</section>
+</li>
+</ol>
+
+  </div><a class="u-url" href="/jekyll/update/2025/11/25/Amazon-Warehouse.html" hidden></a>
+</article>
+
+    </main>
+    <footer>
+        <p>&copy; MOBILE AND SERVICE ROBOTICS</p>
+    </footer>
+</body>
+</html>
