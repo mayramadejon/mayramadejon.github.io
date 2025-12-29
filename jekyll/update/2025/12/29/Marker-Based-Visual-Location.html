@@ -64,7 +64,7 @@ To achieve this, I need to address two main challenges:
 The system must function as a hybrid locator. When the robot detects a beacon, it should estimate its position using the PnP algorithm. If multiple beacons are visible, it should prioritize the closest one for better accuracy. When no beacons are visible, the robot must rely on odometry (Dead Reckoning) to measure the position increment since the last visual correction and add it to the last known position.
 </p>
 
-<h4 id="camera-calibration">Camera Model and Calibration</h4>
+<h3 id="camera-calibration">Camera Model and Calibration</h3>
 <p>
 I assumed an ideal pinhole camera model. However, during initial testing, I noticed that the distance estimated by the vision system (the Z-axis) did not perfectly match reality in the simulator; the robot believed it was further away from the tags than it actually was.
 </p>
@@ -72,12 +72,12 @@ I assumed an ideal pinhole camera model. However, during initial testing, I noti
 To solve this, I implemented a Correction Factor in the camera's intrinsic matrix calculation. Instead of using the image width directly as the focal length, I applied a slight scaling factor. This adjustment calibrated the projection, making the depth measurements accurate enough for reliable positioning.
 </p>
 
-<h4 id="navigation-strategy">Navigation Strategy</h4>
+<h3 id="navigation-strategy">Navigation Strategy</h3>
 <p>
 I implemented a time-based navigation system, the robot follows a pre-defined list of durations for its forward movements. Between each straight segment, it performs a turn, automatically alternating the direction to create a precise zigzag pattern that sweeps the map.
 </p>
 
-<h4 id="localization-algorithm">Localization Algorithm</h4>
+<h3 id="localization-algorithm">Localization Algorithm</h3>
 
 <p>
 The localization system is designed as a hybrid solution that combines two different sources of information to keep track of the robot's position:
@@ -122,13 +122,12 @@ A key optimization I introduced was to pause the heavy image processing tasks wh
 </p>
 
 <ol>
-  <li><strong>Final Video:</strong><br>
   <section id="video-section">
+  <h2>Final Video:</h2>
         <div class="video-container">
                 <video src="/assets/videos/markerLocation.webm" controls width="600"></video>
         </div>
 </section>
-</li>
 </ol>
 
   </div><a class="u-url" href="/jekyll/update/2025/12/29/Marker-Based-Visual-Location.html" hidden></a>
