@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>P6 - Marker Based Visual Location</title>
+    <!-- Enlace al archivo CSS -->
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- Apple icons y favicons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body class="">
+    <header>
+        <h1>SERVICE ROBOTICS</h1>
+    </header>
+    <main>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">P6 - Marker Based Visual Location</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">Dec 25, 2025
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 6: SERVICE ROBOTICS</h2>
+
+
+<h3 id="objective">Objective</h3>
+
+<p>
+The main goal of this practice is to program a robot equipped with a camera and odometry sensors to reliably self-localize within a domestic environment where visual beacons (AprilTags) are distributed at known locations.
+</p>
+<p>
+To achieve this, I need to address two main challenges:
+</p>
+<ul>
+<li>
+    <strong>Exploration Algorithm:</strong> I must implement a navigation logic that allows the robot to wander through the environment and visit different zones to find the markers. This can be done using time-based navigation or laser-based obstacle avoidance.
+</li>
+<li>
+    <strong>Visual Self-Localization:</strong> I need to program a Perspective-n-Point (PnP) algorithm. This algorithm extracts the relative position and orientation of the camera with respect to a beacon when one is detected. By combining this relative data with the absolute position of the beacon (stored in a map), I can calculate the robot's absolute position in the world.
+</li>
+</ul>
+<p>
+The system must function as a hybrid locator. When the robot detects a beacon, it should estimate its position using the PnP algorithm. If multiple beacons are visible, it should prioritize the closest one for better accuracy. When no beacons are visible, the robot must rely on odometry (Dead Reckoning) to measure the position increment since the last visual correction and add it to the last known position.
+</p>
+
+<h4 id="camera-calibration">Camera Model and Calibration</h4>
+<p>
+I assumed an ideal pinhole camera model. However, during initial testing, I noticed that the distance estimated by the vision system (the Z-axis) did not perfectly match reality in the simulator; the robot believed it was further away from the tags than it actually was.
+</p>
+<p>
+To solve this, I implemented a Correction Factor in the camera's intrinsic matrix calculation. Instead of using the image width directly as the focal length, I applied a slight scaling factor. This adjustment calibrated the projection, making the depth measurements accurate enough for reliable positioning.
+</p>
+
+<h4 id="navigation-strategy">Navigation Strategy</h4>
+<p>
+I implemented a time-based navigation system, the robot follows a pre-defined list of durations for its forward movements. Between each straight segment, it performs a turn, automatically alternating the direction to create a precise zigzag pattern that sweeps the map.
+</p>
+
+<h4 id="localization-algorithm">Localization Algorithm</h4>
+
+<p>
+The localization system is designed as a hybrid solution that combines two different sources of information to keep track of the robot's position:
+</p>
+<ul>
+<li>
+    <strong>Continuous Odometry:</strong> 
+    This runs continuously in the background. In every control loop, I calculate how much the robot has moved and add these small changes to the current estimated position.
+</li>
+<li>
+    <strong>Absolute Visual Correction:</strong> 
+    This acts as a correction mechanism. When the camera detects an AprilTag, the system calculates the robot's exact position in the world. This measurement is considered accurate, so I overwrite the estimated position with this new data, effectively removing the accumulated error.
+</li>
+</ul>
+<p>
+To convert the 2D image detection into a 3D position on the map, I followed this computational pipeline:
+</p>
+<ol>
+<li>
+    <strong>Perspective-n-Point (PnP):</strong> 
+    I used the cv2 solvePnP function. By comparing the known real-world size of the tag against the pixels detected in the image, the algorithm calculates the distance and rotation of the Tag relative to the camera.
+</li>
+<li>
+    <strong>Matrix Inversion:</strong> 
+    The PnP result tells me where the tag is located relative to the camera. However, for localization, I need the opposite: the position of the camera relative to the tag. To get this, I constructed the transformation matrix and calculated its inverse.
+</li>
+
+<li>
+    <strong>Coordinate System Alignment:</strong> 
+    A key challenge is that cameras and robots use different coordinate systems. The camera defines "depth" as the Z-axis and "right" as the X-axis. The robot's map defines "forward" as the X-axis. I mathematically swapped these axes and inverted the lateral direction to correct the orientation mismatch.
+</li>
+
+<li>
+    <strong>Global Integration:</strong> 
+    Finally, I mapped the robot's position from the local tag reference to the global map. Using the known absolute position of the tag, I rotated the robot's relative vector by the tag's angle and added the tag's coordinates. This gives the final corrected position and orientation on the map.
+</li>
+</ol>
+
+<h3 id="optimization">Optimization and Results</h3>
+<p>
+A key optimization I introduced was to pause the heavy image processing tasks while the robot is performing a turn. Any latency in the control loop caused by the computer vision algorithms resulted in inaccurate turning angles. By skipping detection during rotation, the movement became more precise.
+</p>
+
+<ol>
+  <li><strong>Final Video:</strong><br>
+  <section id="video-section">
+        <div class="video-container">
+                <video src="/assets/videos/markerLocation.webm" controls width="600"></video>
+        </div>
+</section>
+</li>
+</ol>
+
+  </div><a class="u-url" href="/jekyll/update/2025/12/29/Marker-Based-Visual-Location.html" hidden></a>
+</article>
+
+    </main>
+    <footer>
+        <p>&copy; MOBILE AND SERVICE ROBOTICS</p>
+    </footer>
+</body>
+</html>
