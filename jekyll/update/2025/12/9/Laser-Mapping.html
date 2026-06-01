@@ -51,10 +51,20 @@
 
 <h3 id="probabilistic-mapping">Probabilistic Grid Mapping</h3>
 <p>
-    To build a reliable map, I implemented an <strong>occupancy grid</strong> where each cell holds a value representing the probability of containing an obstacle. Since odometry is an estimation, we cannot simply treat readings as absolute truths. Instead, I used a Bayesian accumulation approach.
+    To build a reliable map, I implemented an <strong>occupancy grid</strong> where each cell holds a value representing the probability of containing an obstacle. Since odometry is an estimation, we cannot simply treat readings as absolute truths. Instead, I used a Bayesian accumulation approach. The probability of a cell being occupied is recursively updated using Bayes' rule in its <strong>Log-Odds</strong> representation.
+</p>
+<p>
+</p>
+<p>
+    A critical requirement for applying Bayes' theorem correctly is the assumption of <strong>independent observations</strong>. Because a laser scan is highly dense, multiple overlapping rays might pass through the exact same pixel in a single 360-degree sweep. To prevent this, I implemented a tracking mechanism (a visited set) that ensures each pixel is updated a maximum of one time per scan cycle.
 </p>
 <p>
     When a beam hits an obstacle, the specific cell at the impact point receives positive data (indicating an obstacle), while all cells along the ray's path receive negative data (indicating free space). A crucial part of this logic is <strong>Saturation</strong>. I implemented clamping limits for the cell values to prevent probabilistic inertia. This ensures that the map remains stable but flexible enough to correct itself if the environment changes or if a previous reading was incorrect.
+</p>
+
+<h3 id="occupancy-ratio">Occupancy Ratio</h3>
+<p>
+    Instead of counting raw pixels, the algorithm calculates the exact percentage of obstacle and free space within each grid cell. I applied a strict obstacle threshold, which acts as a safety margin ensuring the robot's physical chassis does not collide with the warehouse shelves while turning.
 </p>
 
 <h3 id="frontier-exploration">Frontier-Based Exploration</h3>
@@ -86,23 +96,16 @@
 </section>
 </li>
 
-  <li><strong>With some noise (HAL.getOdom2()):</strong><br>
+  <li><strong>With some noise (HAL.getOdom()):</strong><br>
   <section id="video-section">
         <div class="video-container">
-                <video src="/assets/videos/odom22.webm" controls width="600"></video>
-        </div>
-</section>
-</li>
- <li><strong>With noise (HAL.getOdom3()):</strong><br>
-  <section id="video-section">
-        <div class="video-container">
-                <video src="/assets/videos/odom33.webm" controls width="600"></video>
+                <video src="/assets/videos/odom.webm" controls width="600"></video>
         </div>
 </section>
 </li>
 </ol>
 
-  </div><a class="u-url" href="/jekyll/update/2025/11/25/Amazon-Warehouse.html" hidden></a>
+  </div><a class="u-url" href="/jekyll/update/2025/12/9/Laser-Mapping.html" hidden></a>
 </article>
 
     </main>
