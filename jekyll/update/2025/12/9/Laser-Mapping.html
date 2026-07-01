@@ -72,7 +72,7 @@
     To achieve autonomous coverage, the robot needs to decide where to go without human intervention. I implemented a <strong>Frontier-Based Exploration</strong> algorithm. The system continuously analyzes the grid to find the boundaries where known free space meets unexplored territory.
 </p>
 <p>
-    Instead of moving randomly, the robot calculates the distance to all detected frontiers and selects the <strong>closest one</strong> as its next target. This strategy optimizes the exploration time and ensures the map expands methodically from the robot's current position, preventing erratic back-and-forth movements across the warehouse.
+    Instead of moving randomly, the robot calculates the distance to all detected frontiers and selects the <strong>best one</strong> as its next target. This strategy optimizes the exploration time and ensures the map expands methodically from the robot's current position, preventing erratic back-and-forth movements across the warehouse.
 </p>
 
 <h3 id="navigation-and-control">Path Planning and Reactive Control</h3>
@@ -86,6 +86,8 @@
 <h3 id="noise-sensitivity">Sensitivity to Localization Noise</h3>
 <p>
     A part of this exercise was testing the algorithm with noisy odometry. The results clearly illustrated the dependency of mapping on localization. While the map was crisp with standard odometry, increasing the noise caused the obstacles to "smear". This visual degradation confirmed that even a perfect mapping algorithm fails if the underlying localization data drifts too much, as the robot begins to "paint" obstacles in the wrong grid cells.
+    
+In older versions of Unibotics, the odometry was a lot more similar to reality than the latest ones. That's why in the odometry videos we can see a very clear downgrade, even if it's exactly the same code, with only 1 month of difference.
 </p>
 <ol>
   <li><strong>Without noise:</strong><br>
@@ -96,10 +98,17 @@
 </section>
 </li>
 
-  <li><strong>With some noise (HAL.getOdom()):</strong><br>
+  <li><strong>With noise (HAL.getOdom(): OLDER VERSION):</strong><br>
   <section id="video-section">
         <div class="video-container">
                 <video src="/assets/videos/odom.webm" controls width="600"></video>
+        </div>
+</section>
+</li>
+<li><strong>With noise (HAL.getOdom(): LATEST VERSION):</strong><br>
+  <section id="video-section">
+        <div class="video-container">
+                <video src="/assets/videos/odom2.webm" controls width="600"></video>
         </div>
 </section>
 </li>
