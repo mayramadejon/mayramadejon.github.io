@@ -3,44 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P4 - Global Navigation | Mayra Madejón</title>
+    
+    <!-- Meta tags -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <title>P4 - Path Planning</title>
-    <!-- Link to CSS file -->
-    <link rel="stylesheet" href="/assets/css/styles.css">
-    <!-- Apple icons and favicons -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#F2F5F0">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#F2F5F0',
+                        primary: '#8A9A86',
+                        accent: '#E0E5DF',
+                        textMain: '#2C352D',
+                        textMuted: '#6B726B',
+                        borderLight: '#D8DED5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        body { 
+            background-color: #F2F5F0;
+            color: #2C352D;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        /* Tipografía del artículo */
+        article h2, article h3, article h4 {
+            font-family: "Playfair Display", serif;
+            color: #2C352D;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        article h3 {
+            font-size: 1.75rem;
+            border-bottom: 1px solid #D8DED5;
+            padding-bottom: 0.5rem;
+        }
+
+        article h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        article p {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+        }
+        
+        article ul, article ol {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+            padding-left: 1.5rem;
+        }
+
+        article li {
+            margin-bottom: 0.5rem;
+        }
+
+        article strong {
+            color: #1E251F;
+            font-weight: 600;
+        }
+        
+        /* Contenedor de Video / Imágenes */
+        .video-wrapper, .img-wrapper {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(138, 154, 134, 0.1);
+            border: 1px solid #D8DED5;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        video, img {
+            border-radius: 8px;
+            max-width: 100%;
+        }
+        
+        /* Enlaces */
+        a {
+            transition: color 0.3s ease;
+        }
+
+        /* Código inline */
+        code {
+            background-color: #E0E5DF;
+            color: #2C352D;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        hr {
+            border-color: #D8DED5;
+            margin: 2rem 0;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <h1>MOBILE ROBOTICS</h1>
-    </header>
-    <main>
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
-            <header class="post-header">
-                <h1 class="post-title p-name" itemprop="name headline">P4 - Global Navigation</h1>
-                <p class="post-meta">
-                    <time class="dt-published" datetime="2024-11-27T10:00:00+02:00" itemprop="datePublished">Nov 26, 2024</time>
+<body class="antialiased selection:bg-primary/20 selection:text-textMain">
+
+    <div class="bg-texture"></div>
+
+    <!-- Navegación simple -->
+    <nav class="w-full z-50 py-6 border-b border-borderLight">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
+            <a href="/" class="text-xl font-serif font-semibold tracking-wide text-textMain hover:text-primary transition-colors">
+                <i class="fas fa-arrow-left mr-2 text-sm"></i> Back to Portfolio
+            </a>
+            <div class="text-sm font-medium text-textMuted uppercase tracking-widest">
+                Projects
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-borderLight relative z-10">
+            
+            <!-- Cabecera del Post -->
+            <header class="mb-12 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/40 text-primary text-xs font-medium uppercase tracking-widest border border-primary/20 mb-6">
+                    Mobile Robotics
+                </div>
+                <h1 class="text-4xl md:text-5xl font-serif text-textMain mb-4">P4 - Global Navigation</h1>
+                <p class="text-textMuted font-medium uppercase tracking-widest text-sm">
+                    November 26, 2024
                 </p>
             </header>
 
-            <div class="post-content e-content" itemprop="articleBody">
+            <!-- Cuerpo del Post -->
+            <div class="prose prose-lg max-w-none">
+                
                 <h2 id="practice-4-path-planning">Practice 4: Gradient Path Planning for a Taxi</h2>
+                
                 <h3 id="objective">Objective</h3>
                 <p>The objective of this practice is to program a global navigation algorithm based on "Gradient Path Planning" (GPP) for a taxi in a city environment.  The aim is for the robot to efficiently find the shortest collision-free path from its starting position to a specified goal while navigating a grid-based environment.</p>
 
@@ -51,14 +185,14 @@
 
                 <h4 id="wave-front-algorithm">1. Wave Front Algorithm (WFA)</h4>
                 <p>The algorithm starts from the target point selected by the user and uses a <strong>Breadth-First Search (BFS)</strong> to expand through all the free cells in the map. The process is as follows:</p>
-                <ul>
+                <ul class="list-disc">
                     <li>Each visited cell is assigned a cost value proportional to the accumulated distance from the target.</li>
                     <li>This cost value represents the "difficulty" of reaching the target from that cell: the farther the cell is from the target, the higher the cost.</li>
                 </ul>
 
                 <h4 id="obstacle-expansion">2. Obstacle Expansion</h4>
                 <p>To avoid routes that pass too close to obstacles, an additional procedure was implemented to penalize cells near walls or obstacles. This method:</p>
-                <ul>
+                <ul class="list-disc">
                     <li>Adds an extra cost to cells adjacent to obstacles.</li>
                     <li>Propagates this penalty up to three cells deep, with decreasing values (more penalty the closer the cell is to the obstacle).</li>
                 </ul>
@@ -66,26 +200,28 @@
 
                 <h4 id="gradient-based-navigation">3. Gradient-Based Navigation</h4>
                 <p>After generating the cost map, the taxi employs a reactive approach based on the gradient to navigate towards the target:</p>
-                <ul>
+                <ul class="list-disc">
                     <li>The taxi examines its neighboring cells within its immediate surroundings.</li>
                     <li>It selects the direction leading to the cell with the lowest cost, effectively following the "gradient descent."</li>
                     <li>This method does not require pre-planning the entire route, making it more flexible to adapt in the environment.</li>
                 </ul>
                 <p>Gradient-based navigation allows the taxi to adjust dynamically and efficiently, ensuring smooth and continuous motion towards its goal.</p>
+                
                 <hr />
 
                 <h3 id="grid-representation">Grid Representation</h3>
                 <p>The environment is modeled as a grid where each cell represents a discrete position. Cells can either be:</p>
-                <ul>
+                <ul class="list-disc">
                     <li><strong>Free:</strong> The robot can move through these cells.</li>
                     <li><strong>Occupied:</strong> Represent obstacles that the robot must avoid.</li>
                 </ul>
                 <p>The algorithm calculates paths by traversing free cells while avoiding occupied ones.</p>
 
                 <hr />
+                
                 <h3 id="key-challenges">Key Challenges</h3>
                 <p>Throughout the implementation of the navigation system, several challenges arose that required attention and adjustments:</p>
-                <ul>
+                <ul class="list-disc">
                     <li><strong>Incorrect Cost Calculation in Diagonal Directions:</strong> Initially, the cost calculation for diagonal directions was inaccurate, and without normalization, it caused the taxi to operate only in the upper half of the map. This issue was resolved by properly adjusting the cost calculation, ensuring that the taxi could navigate the entire map.</li>
                     
                     <li><strong>Obstacle Penalty Field Adjustment:</strong> The penalty field for obstacles had to be fine-tuned to ensure that the taxi maintained enough space to pass through, without getting too close to the walls. Additionally, it was important to treat each cell adjacent to obstacles separately to prevent the accumulation of excessive costs, which could lead to inefficient pathfinding.</li>
@@ -100,25 +236,23 @@
                 <hr />
                 
                 <h3 id="highlights">Highlights</h3>
-              
-                <ul>
+                
+                <ul class="list-disc">
                     <li>
                         <strong>Using a Deque Instead of a Regular Queue:</strong>
-                        <p>The Wave Front Algorithm (WFA) used a <code>deque</code> (double-ended queue) instead of a regular queue. This choice was motivated by its efficiency and flexibility in managing elements. While the algorithm primarily performs a Breadth-First Search (BFS), the ability to efficiently add or remove elements from both ends of the <code>deque</code> made it ideal for handling edge cases during map traversal and cost propagation.</p>
+                        <p class="mt-2">The Wave Front Algorithm (WFA) used a <code>deque</code> (double-ended queue) instead of a regular queue. This choice was motivated by its efficiency and flexibility in managing elements. While the algorithm primarily performs a Breadth-First Search (BFS), the ability to efficiently add or remove elements from both ends of the <code>deque</code> made it ideal for handling edge cases during map traversal and cost propagation.</p>
                     </li>
                     
                     <li>
                         <strong>Dynamic Target Selection:</strong>
-                        <p>The system allows for a new target to be selected dynamically after reaching the previous one. This feature adds flexibility, enabling the robot to handle multiple tasks or select a new destination based on user input without restarting the algorithm.</p>
+                        <p class="mt-2">The system allows for a new target to be selected dynamically after reaching the previous one. This feature adds flexibility, enabling the robot to handle multiple tasks or select a new destination based on user input without restarting the algorithm.</p>
                     </li>
                     
                     <li>
                         <strong>Linear Speed Adjustment Based on Angular Error:</strong>
-                        <p>To ensure smooth motion and reduce overshooting during turns, a regulator was implemented to adjust the linear speed of the robot. As the angular error (the difference between the robot's current heading and the direction towards the target) increases, the linear speed is proportionally reduced. This adjustment allows the robot to make sharper turns when necessary without compromising stability or control.</p>
+                        <p class="mt-2">To ensure smooth motion and reduce overshooting during turns, a regulator was implemented to adjust the linear speed of the robot. As the angular error (the difference between the robot's current heading and the direction towards the target) increases, the linear speed is proportionally reduced. This adjustment allows the robot to make sharper turns when necessary without compromising stability or control.</p>
                     </li>
                 </ul>
-
-
 
                 <h3 id="results-and-performance">Results and Performance</h3>
                 <p>After implementing the algorithm, the robot successfully navigated to its goal while avoiding obstacles. The path optimization techniques further enhanced the robot's efficiency, resulting in shorter travel times and smoother movements.</p>
@@ -127,21 +261,20 @@
 
                 <h3 id="video-demonstration">Video Demonstration</h3>
                 <p>Below is a video showing the robot successfully navigating:</p>
-                <section id="video-section">
-                    <h2>Watch the Car in Action</h2>
-                    <div class="video-container">
-                        <video src="/assets/videos/taxi.webm" controls width="600"></video>
+                <section id="video-section" class="mt-8">
+                    <h4 class="text-xl font-serif text-textMain mb-4"><i class="fas fa-video mr-2 text-primary"></i> Watch the Car in Action</h4>
+                    <div class="video-wrapper">
+                        <video src="/assets/videos/taxi.webm" controls></video>
                     </div>
                 </section>
 
-                
             </div>
-            <a class="u-url" href="/projects/update/2024/11/27/P4-Global-Navigation.html" hidden></a>
         </article>
     </main>
-    <footer>
-        <p>&copy; 2024 MOBILE ROBOTICS</p>
+
+    <footer class="py-8 text-center text-textMuted text-sm mt-8 border-t border-borderLight">
+        <p>&copy; 2026 Mayra Madejón Vila. University Portfolio.</p>
     </footer>
+
 </body>
 </html>
-

@@ -3,43 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P3 - Obstacle Avoidance | Mayra Madejón</title>
+    
+    <!-- Meta tags -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <title>P3 - Obstacle Avoidance</title>
-    <!-- Link to CSS file -->
-    <link rel="stylesheet" href="/assets/css/styles.css">
-    <!-- Apple icons and favicons -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#F2F5F0">
+
+    <!-- Tailwind CSS (CDN para que funcione sin main.css) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#F2F5F0', // Very light, warm matcha/sage background
+                        primary: '#8A9A86', // Soft matcha green for primary accents
+                        accent: '#E0E5DF', // Lighter sage for tags and backgrounds
+                        textMain: '#2C352D', // Deep forest/slate green for main text
+                        textMuted: '#6B726B', // Muted sage-grey for secondary text
+                        borderLight: '#D8DED5' // Soft border color blending with matcha
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        body { 
+            background-color: #F2F5F0;
+            color: #2C352D;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        /* Tipografía del artículo */
+        article h2, article h3, article h4 {
+            font-family: "Playfair Display", serif;
+            color: #2C352D;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        article h3 {
+            font-size: 1.75rem;
+            border-bottom: 1px solid #D8DED5;
+            padding-bottom: 0.5rem;
+        }
+
+        article h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        article p {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+        }
+        
+        article ul, article ol {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+            padding-left: 1.5rem;
+        }
+
+        article li {
+            margin-bottom: 0.5rem;
+        }
+
+        article strong {
+            color: #1E251F;
+            font-weight: 600;
+        }
+        
+        /* Contenedor de Video / Imágenes */
+        .video-wrapper, .img-wrapper {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(138, 154, 134, 0.1);
+            border: 1px solid #D8DED5;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        video, img {
+            border-radius: 8px;
+            max-width: 100%;
+        }
+        
+        /* Enlaces */
+        a {
+            transition: color 0.3s ease;
+        }
+
+        /* Código inline */
+        code {
+            background-color: #E0E5DF;
+            color: #2C352D;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        hr {
+            border-color: #D8DED5;
+            margin: 2rem 0;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <h1>MOBILE ROBOTICS</h1>
-    </header>
-    <main>
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
-            <header class="post-header">
-                <h1 class="post-title p-name" itemprop="name headline">P3 - Obstacle Avoidance</h1>
-                <p class="post-meta">
-                    <time class="dt-published" datetime="2024-10-27T07:49:08+02:00" itemprop="datePublished">Oct 27, 2024</time>
+<body class="antialiased selection:bg-primary/20 selection:text-textMain">
+
+    <div class="bg-texture"></div>
+
+    <!-- Navegación simple -->
+    <nav class="w-full z-50 py-6 border-b border-borderLight">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
+            <a href="/" class="text-xl font-serif font-semibold tracking-wide text-textMain hover:text-primary transition-colors">
+                <i class="fas fa-arrow-left mr-2 text-sm"></i> Back to Portfolio
+            </a>
+            <div class="text-sm font-medium text-textMuted uppercase tracking-widest">
+                Projects
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-borderLight relative z-10">
+            
+            <!-- Cabecera del Post -->
+            <header class="mb-12 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/40 text-primary text-xs font-medium uppercase tracking-widest border border-primary/20 mb-6">
+                    Mobile Robotics
+                </div>
+                <h1 class="text-4xl md:text-5xl font-serif text-textMain mb-4">P3 - Obstacle Avoidance</h1>
+                <p class="text-textMuted font-medium uppercase tracking-widest text-sm">
+                    October 27, 2024
                 </p>
             </header>
 
-            <div class="post-content e-content" itemprop="articleBody">
+            <!-- Cuerpo del Post -->
+            <div class="prose prose-lg max-w-none">
+                
                 <h2 id="practice-3-obstacle-avoidance">Practice 3: Obstacle Avoidance Using VFF</h2>
 
                 <h3 id="objective">Objective</h3>
@@ -51,7 +184,7 @@
                 <p>The VFF navigation algorithm allows the car to generate forces based on its environment. Each obstacle produces a repulsive force, while the target waypoint generates an attractive force. The resultant force dictates the car's velocity and direction.</p>
 
                 <h4 id="force-vectors">Force Vectors</h4>
-                <ul>
+                <ul class="list-disc">
                     <li><strong>Attractive Force:</strong> This vector guides the car towards the next waypoint.It is proportional to the distance from the waypoint, allowing the car to navigate towards it efficiently. A scaling factor for the attractive force is introduced to ensure that the car does not overshoot or miss the target waypoint.</li>
                     <li><strong>Repulsive Force:</strong> This vector pushes the car away from any detected obstacles. This force pushes the car away from obstacles detected by the laser sensor. It is computed based on the distance to the nearest obstacle, with closer obstacles exerting a stronger repulsive force.</li>
                     <li><strong>Total Force:</strong> The combined vector of attractive and repulsive forces determines the final movement commands for the car.</li>
@@ -65,25 +198,32 @@
 
                 <h4>Formula</h4>
                 <p>The repulsive force (<em>F<sub>r</sub></em>) is computed using the formula:</p>
-                <pre><code>F<sub>r</sub> = F<sub>REPULSIVE</sub> × (R<sub>RADIUS</sub> - d)</code></pre>
+                <div class="bg-gray-100 p-4 rounded-md mb-4 border border-borderLight overflow-x-auto">
+                    <code>F<sub>r</sub> = F<sub>REPULSIVE</sub> × (R<sub>RADIUS</sub> - d)</code>
+                </div>
+                
                 <p>Where:</p>
-                <ul>
+                <ul class="list-disc">
                     <li><strong>F<sub>REPULSIVE</sub></strong> is a scaling factor that determines the strength of the repulsive force.</li>
                     <li><strong>R<sub>RADIUS</sub></strong> defines a safe distance around the car; closer obstacles than this distance will influence the car's movement.</li>
                     <li><strong>d</strong> is the distance to the nearest obstacle, obtained from the laser sensor data.</li>
                 </ul>
+                
                 <hr />
 
                 <h4>Force Components</h4>
                 <p>Once the magnitude of the repulsive force is calculated, it is decomposed into its x and y components:</p>
-                <pre><code>F<sub>r_x</sub> = -F<sub>r</sub> × cos(θ)</code></pre>
-                <pre><code>F<sub>r_y</sub> = -F<sub>r</sub> × sin(θ)</code></pre>
+                <div class="bg-gray-100 p-4 rounded-md mb-4 border border-borderLight overflow-x-auto">
+                    <code>F<sub>r_x</sub> = -F<sub>r</sub> × cos(θ)</code><br>
+                    <code class="mt-2 block">F<sub>r_y</sub> = -F<sub>r</sub> × sin(θ)</code>
+                </div>
                 <p>Where θ is the angle corresponding to the direction of the laser ray pointing towards the obstacle. This helps determine the exact direction in which the car should move away from the obstacle.</p>
+                
                 <hr />
 
                 <h4>Additional Scaling</h4>
                 <p>To enhance the car's responsiveness, there is a scaling factor to the y-component of the repulsive force if the obstacle is directly in front of it or within specific limits. This ensures that the car can navigate effectively and make necessary adjustments.</p>
-                <hr />
+                
                 <hr />
 
                 <h3 id="speed-control">Speed Control</h3>
@@ -98,10 +238,11 @@
 
                 <h3 id="target-management">Target Management</h3>
                 <p>When the car successfully navigates to a waypoint, the algorithm marks the target as reached and retrieves the next target for navigation. This loop continues until the car completes its circuit.</p>
+                
                 <hr />
 
                 <h3 id="key-challenges">Key Challenges</h3>
-                <ol>
+                <ol class="list-decimal">
                     <li><strong>Noise and Sensor Accuracy:</strong> Fluctuations in laser readings can lead to inconsistent obstacle detection. Implementing filtering techniques helps in minimizing this issue.</li>
                     <li><strong>Sharp Turns:</strong> Navigating tight corners requires quick adjustments. Tuning the parameters of the attractive and repulsive forces ensures that the car can handle sharp turns efficiently.</li>
                     <li><strong>Balancing Speed and Safety:</strong> While speed is essential, it should not compromise the car's ability to avoid collisions. The algorithm adapts the speed based on the environment's complexity.</li>
@@ -116,20 +257,20 @@
 
                 <h3 id="video-demonstration">Video Demonstration</h3>
                 <p>Below is a video showing the car navigating the circuit using the VFF algorithm:</p>
-                <section id="video-section">
-                    <h2>Watch the Car in Action</h2>
-                    <div class="video-container">
-                        <video src="/assets/videos/obstacle_avoidance2.webm" controls width="600"></video>
+                <section id="video-section" class="mt-8">
+                    <h4 class="text-xl font-serif text-textMain mb-4"><i class="fas fa-video mr-2 text-primary"></i> Watch the Car in Action</h4>
+                    <div class="video-wrapper">
+                        <video src="/assets/videos/obstacle_avoidance2.webm" controls></video>
                     </div>
                 </section>
 
             </div>
-            <a class="u-url" href="/projects/update/2024/10/27/P3-Obstacle-Avoidance.html" hidden></a>
         </article>
     </main>
-    <footer>
-        <p>&copy; 2024 MOBILE ROBOTICS</p>
+
+    <footer class="py-8 text-center text-textMuted text-sm mt-8 border-t border-borderLight">
+        <p>&copy; 2026 Mayra Madejón Vila. University Portfolio.</p>
     </footer>
+
 </body>
 </html>
-

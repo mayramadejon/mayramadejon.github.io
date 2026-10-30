@@ -1,107 +1,266 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P3 - Simulation in ROS and Gazebo | Mayra Madejón</title>
+    
+    <!-- Meta tags -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <title>P3 - Simulation in ROS and Gazebo</title>
-    <!-- Enlace al archivo CSS -->
-    <link rel="stylesheet" href="/assets/css/styles.css">
-    <!-- Apple icons y favicons -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#F2F5F0">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#F2F5F0',
+                        primary: '#8A9A86',
+                        accent: '#E0E5DF',
+                        textMain: '#2C352D',
+                        textMuted: '#6B726B',
+                        borderLight: '#D8DED5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        body { 
+            background-color: #F2F5F0;
+            color: #2C352D;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        /* Tipografía del artículo */
+        article h2, article h3, article h4 {
+            font-family: "Playfair Display", serif;
+            color: #2C352D;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        article h3 {
+            font-size: 1.75rem;
+            border-bottom: 1px solid #D8DED5;
+            padding-bottom: 0.5rem;
+        }
+
+        article h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        article p {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+        }
+        
+        article ul, article ol {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+            padding-left: 1.5rem;
+        }
+
+        article li {
+            margin-bottom: 0.5rem;
+        }
+
+        article strong {
+            color: #1E251F;
+            font-weight: 600;
+        }
+        
+        /* Contenedor de Video / Imágenes */
+        .video-wrapper, .img-wrapper {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(138, 154, 134, 0.1);
+            border: 1px solid #D8DED5;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        video, img {
+            border-radius: 8px;
+            max-width: 100%;
+        }
+        
+        /* Enlaces */
+        a {
+            transition: color 0.3s ease;
+        }
+        
+        .custom-link {
+            color: #8A9A86;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .custom-link:hover {
+            color: #2C352D;
+            border-bottom-color: #2C352D;
+        }
+
+        /* Código inline */
+        code {
+            background-color: #E0E5DF;
+            color: #2C352D;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        hr {
+            border-color: #D8DED5;
+            margin: 2rem 0;
+        }
+    </style>
 </head>
-<body class="">
-    <header>
-        <h1>MODELING AND SIMULATION OF ROBOTS</h1>
-    </header>
-    <main>
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+<body class="antialiased selection:bg-primary/20 selection:text-textMain">
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">P3 - Simulation in ROS and Gazebo</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">May 11, 2025
-      </time></p>
-  </header>
+    <div class="bg-texture"></div>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 3: Integration and Study of Dynamics in Gazebo and ROS2</h2>
+    <!-- Navegación simple -->
+    <nav class="w-full z-50 py-6 border-b border-borderLight">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
+            <a href="/" class="text-xl font-serif font-semibold tracking-wide text-textMain hover:text-primary transition-colors">
+                <i class="fas fa-arrow-left mr-2 text-sm"></i> Back to Portfolio
+            </a>
+            <div class="text-sm font-medium text-textMuted uppercase tracking-widest">
+                Projects
+            </div>
+        </div>
+    </nav>
 
-<h3 id="objective">Objective</h3>
-<p>The main objective of this lab is to correctly configure and simulate a mobile manipulator robot in ROS 2 using a model created in Blender. The robot must include key sensors like an IMU and cameras, and be fully compatible with ROS 2 standards (REP-103 and REP-105). It should be operable via RViz and teleoperation tools, enabling manipulation tasks like picking and placing an object. Finally, motion data is recorded for power analysis and visualized through plots.</p>
+    <!-- Contenido Principal -->
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-borderLight relative z-10">
+            
+            <!-- Cabecera del Post -->
+            <header class="mb-12 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/40 text-primary text-xs font-medium uppercase tracking-widest border border-primary/20 mb-6">
+                    Modeling and Simulation
+                </div>
+                <h1 class="text-4xl md:text-5xl font-serif text-textMain mb-4">P3 - Simulation in ROS and Gazebo</h1>
+                <p class="text-textMuted font-medium uppercase tracking-widest text-sm">
+                    May 11, 2025
+                </p>
+            </header>
 
-<hr />
+            <!-- Cuerpo del Post -->
+            <div class="prose prose-lg max-w-none">
+                
+                <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 3: Integration and Study of Dynamics in Gazebo and ROS2</h2>
 
-<h3 id="rosbag">ROSBAG</h3>
-<p>
-  During the teleoperation and motion execution phases, all relevant data from the robot's sensors and joints were recorded using <code>rosbag</code>. This data includes joint efforts and IMU measurements, which are essential for analyzing the power consumption of the pick and place mechanism.
-</p>
-<p>
-  The following file contains the complete rosbag recorded during the experiment. It can be used to generate plots for power analysis, joint performance, and wheel dynamics.
-</p>
-<p>
-  <a href="https://drive.google.com/drive/folders/1Z9Ce4JQLXRykjX1q2n95V25RyExGu7LJ?usp=sharing" target="_blank">Download ROSBAG File</a>
-</p>
+                <h3 id="objective">Objective</h3>
+                <p>The main objective of this lab is to correctly configure and simulate a mobile manipulator robot in ROS 2 using a model created in Blender. The robot must include key sensors like an IMU and cameras, and be fully compatible with ROS 2 standards (REP-103 and REP-105). It should be operable via RViz and teleoperation tools, enabling manipulation tasks like picking and placing an object. Finally, motion data is recorded for power analysis and visualized through plots.</p>
 
-<h3 id="results-analysis">Results Analysis</h3>
-    <h4>Plot 1: Time vs Wheel Position</h4>
-    <img src="/assets/images/grafica_ruedas.png" alt="Wheel Position Plot" style="max-width:50%; height:auto;" />
-    <p>This plot shows the angular position of each wheel over time during the teleoperation. An initial steady increase is seen across all wheels until they reach a maximum of around 2.2 radians, indicating a straight and controlled motion. The alignment of the curves confirms synchronized movement among the wheels.</p>
+                <hr />
 
-    <h4>Plot 2: Time vs Wheel Velocity (Acceleration)</h4>
-    <img src="/assets/images/grafica_aceleracion_ruedas.png" alt="Wheel Acceleration Plot" style="max-width:50%; height:auto;" />
-    <p>This plot illustrates the changes in rotational velocity of the wheels over time. An initial spike represents the robot’s start-up motion, followed by a few brief fluctuations, likely from minor adjustments during teleoperation. The velocity then stabilizes near zero, indicating that the robot reached its destination and came to a stop.</p>
+                <h3 id="rosbag">ROSBAG</h3>
+                <p>
+                  During the teleoperation and motion execution phases, all relevant data from the robot's sensors and joints were recorded using <code>rosbag</code>. This data includes joint efforts and IMU measurements, which are essential for analyzing the power consumption of the pick and place mechanism.
+                </p>
+                <p>
+                  The following file contains the complete rosbag recorded during the experiment. It can be used to generate plots for power analysis, joint performance, and wheel dynamics.
+                </p>
+                <p>
+                  <a href="https://drive.google.com/drive/folders/1Z9Ce4JQLXRykjX1q2n95V25RyExGu7LJ?usp=sharing" target="_blank" class="custom-link"><i class="fas fa-external-link-alt mr-1"></i> Download ROSBAG File</a>
+                </p>
 
-    <p>These two plots are crucial for understanding the mobile platform’s dynamic behavior and validating that the recorded data aligns with the planned trajectory and actions.</p>
-    
-    <h4>Plot 3: Time vs G-parcial (Joint Power Consumption)</h4>
-<p>This plot represents the partial power consumption (G-parcial) of each joint involved in the pick and place mechanism over time. The G-parcial is computed as the sum of torque efforts applied to the joints during motion execution, especially from the moment the arm starts the pick action until it returns to its initial position.</p>
+                <hr />
 
-<p>We expect the following behaviors in this plot:</p>
-<ul>
-  <p>At the beginning (before the pick), the G-parcial values should be close to zero, as the arm is idle.</p>
-  <p>During the picking phase, a sharp increase in effort values is expected, as the joints apply torque to reach and grasp the object.</p>
-  
-  <img src="/assets/images/pick_robot.png" alt="Pick Image Robot" style="max-width:50%; height:auto;" />
-  
-  
-  <p>While holding and moving the object, G-parcial values may remain elevated depending on the weight distribution.</p>
-  
-  <img src="/assets/images/place_robot.png" alt="Place Image Robot" style="max-width:50%; height:auto;" />
-  
-  
-  <p>As the object is placed on the robot and the arm returns to its home position, a decrease in effort is expected, eventually stabilizing again near zero.</p>
-  
-  <img src="/assets/images/place2_robot.png" alt="Place Parte 2 Image Robot" style="max-width:50%; height:auto;" />
-</ul>
-  
-<p>This plot is essential to identify which joints contribute the most to power consumption and to optimize the motion planning and mechanical design for energy efficiency.</p>
+                <h3 id="results-analysis">Results Analysis</h3>
+                
+                <h4>Plot 1: Time vs Wheel Position</h4>
+                <div class="img-wrapper">
+                    <img src="/assets/images/grafica_ruedas.png" alt="Wheel Position Plot" />
+                </div>
+                <p>This plot shows the angular position of each wheel over time during the teleoperation. An initial steady increase is seen across all wheels until they reach a maximum of around 2.2 radians, indicating a straight and controlled motion. The alignment of the curves confirms synchronized movement among the wheels.</p>
 
-    
+                <h4>Plot 2: Time vs Wheel Velocity (Acceleration)</h4>
+                <div class="img-wrapper">
+                    <img src="/assets/images/grafica_aceleracion_ruedas.png" alt="Wheel Acceleration Plot" />
+                </div>
+                <p>This plot illustrates the changes in rotational velocity of the wheels over time. An initial spike represents the robot’s start-up motion, followed by a few brief fluctuations, likely from minor adjustments during teleoperation. The velocity then stabilizes near zero, indicating that the robot reached its destination and came to a stop.</p>
 
+                <p>These two plots are crucial for understanding the mobile platform’s dynamic behavior and validating that the recorded data aligns with the planned trajectory and actions.</p>
+                
+                <h4>Plot 3: Time vs G-parcial (Joint Power Consumption)</h4>
+                <p>This plot represents the partial power consumption (G-parcial) of each joint involved in the pick and place mechanism over time. The G-parcial is computed as the sum of torque efforts applied to the joints during motion execution, especially from the moment the arm starts the pick action until it returns to its initial position.</p>
 
-  </div><a class="u-url" href="/projects/update/2025/05/11/Simulation-ROS-Gazebo.html" hidden></a>
-</article>
+                <p>We expect the following behaviors in this plot:</p>
+                <ul class="list-disc">
+                  <li>At the beginning (before the pick), the G-parcial values should be close to zero, as the arm is idle.</li>
+                  <li>During the picking phase, a sharp increase in effort values is expected, as the joints apply torque to reach and grasp the object.</li>
+                </ul>
+                
+                <div class="img-wrapper">
+                    <img src="/assets/images/pick_robot.png" alt="Pick Image Robot" />
+                </div>
+                
+                <ul class="list-disc">
+                  <li>While holding and moving the object, G-parcial values may remain elevated depending on the weight distribution.</li>
+                </ul>
+                
+                <div class="img-wrapper">
+                    <img src="/assets/images/place_robot.png" alt="Place Image Robot" />
+                </div>
+                
+                <ul class="list-disc">
+                  <li>As the object is placed on the robot and the arm returns to its home position, a decrease in effort is expected, eventually stabilizing again near zero.</li>
+                </ul>
+                
+                <div class="img-wrapper">
+                    <img src="/assets/images/place2_robot.png" alt="Place Parte 2 Image Robot" />
+                </div>
+                
+                <p class="mt-4">This plot is essential to identify which joints contribute the most to power consumption and to optimize the motion planning and mechanical design for energy efficiency.</p>
 
+            </div>
+        </article>
     </main>
-    <footer>
-        <p>&copy; 2024 MOBILE ROBOTICS</p>
+
+    <footer class="py-8 text-center text-textMuted text-sm mt-8 border-t border-borderLight">
+        <p>&copy; 2026 Mayra Madejón Vila. University Portfolio.</p>
     </footer>
+
 </body>
 </html>
+

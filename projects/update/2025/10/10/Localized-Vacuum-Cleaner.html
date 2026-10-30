@@ -1,151 +1,300 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P1 - Localized Vacuum Cleaner | Mayra Madejón</title>
+    
+    <!-- Meta tags -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <title>P1 - Localized Vacuum Cleaner</title>
-    <!-- Enlace al archivo CSS -->
-    <link rel="stylesheet" href="/assets/css/styles.css">
-    <!-- Apple icons y favicons -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#F2F5F0">
+
+    <!-- Tailwind CSS (CDN para que funcione sin main.css) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#F2F5F0', // Very light, warm matcha/sage background
+                        primary: '#8A9A86', // Soft matcha green for primary accents
+                        accent: '#E0E5DF', // Lighter sage for tags and backgrounds
+                        textMain: '#2C352D', // Deep forest/slate green for main text
+                        textMuted: '#6B726B', // Muted sage-grey for secondary text
+                        borderLight: '#D8DED5' // Soft border color blending with matcha
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        body { 
+            background-color: #F2F5F0;
+            color: #2C352D;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        /* Tipografía del artículo */
+        article h2, article h3, article h4 {
+            font-family: "Playfair Display", serif;
+            color: #2C352D;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        article h3 {
+            font-size: 1.75rem;
+            border-bottom: 1px solid #D8DED5;
+            padding-bottom: 0.5rem;
+        }
+
+        article h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        article p {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+        }
+        
+        article ul, article ol {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+            padding-left: 1.5rem;
+        }
+
+        article li {
+            margin-bottom: 0.5rem;
+        }
+
+        article strong {
+            color: #1E251F;
+            font-weight: 600;
+        }
+        
+        /* Contenedor de Video / Imágenes */
+        .video-wrapper, .img-wrapper {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(138, 154, 134, 0.1);
+            border: 1px solid #D8DED5;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        video, img {
+            border-radius: 8px;
+            max-width: 100%;
+        }
+        
+        /* Enlaces */
+        a {
+            transition: color 0.3s ease;
+        }
+
+        /* Código inline y bloques pre */
+        code {
+            background-color: #E0E5DF;
+            color: #2C352D;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background-color: #E0E5DF;
+            color: #2C352D;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            border: 1px solid #D8DED5;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+
+        hr {
+            border-color: #D8DED5;
+            margin: 2rem 0;
+        }
+    </style>
 </head>
-<body class="">
-    <header>
-        <h1>SERVICE ROBOTICS</h1>
-    </header>
-    <main>
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+<body class="antialiased selection:bg-primary/20 selection:text-textMain">
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">P1 - Localized Vacuum Cleaner</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">Oct 10, 2025
-      </time></p>
-  </header>
+    <div class="bg-texture"></div>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 1: SERVICE ROBOTICS</h2>
-
-<h3 id="objective">Objective</h3>
-<p>The main objective of this practice is to implement the logic of a navigation algorithm for an autonomous vacuum cleaner by making use of the location of the robot. The robot is equipped with a map and knows it’s current location in it. The main objective will be to cover the largest area of ​​a house using the programmed algorithm.</p>
-
-<hr />
-
-<h3 id="map-registration">Map Registration</h3>
-<p>
-  To correctly register the map, a correspondence between the real-world coordinates from Gazebo and the pixel coordinates of the image map was established. 
-  First, several reference points were selected in the Gazebo simulation environment using the functions <code>HAL.getPose3d().x</code> and <code>HAL.getPose3d().y</code> to obtain their real positions. These same points were then identified on the map image using an image editor (GIMP) to determine their pixel coordinates.
-</p>
-
-<p>
-  The relationship between both coordinate systems can be expressed as:
-</p>
-
-<pre>
-[px]   [ a  -b  tx ] [xg]
-[py] = [ b   a  ty ] [yg]
-[ 1]   [ 0   0   1 ] [ 1]
-</pre>
-
-<p>
-  where <code>(xg, yg)</code> are the Gazebo coordinates, and <code>(px, py)</code> are the corresponding pixel coordinates in the map. 
-  The parameters <code>a</code>, <code>b</code>, <code>tx</code>, and <code>ty</code> were computed using the least squares method 
-  (<code>np.linalg.lstsq</code>) by building the matrices A and B that relate both sets of points. 
-  This approach minimizes the geometric error between the two coordinate systems and provides an optimal transformation matrix <code>T</code>.
-</p>
-
-<p>
-  Finally, this transformation is used in the function <code>gazebo_to_map(x, y)</code> to convert any robot position from Gazebo coordinates to its equivalent pixel position on the map. 
-</p>
-
-
-<h3 id="creation-of-the-navigation-grid">Creation of the Navigation Grid</h3>
- <p>
-  The environment map is first converted to grayscale so it can be processed as a <code>uint8</code> matrix compatible with <code>WebGUI.showNumpy()</code>. 
-  Then, an erosion operation (<code>cv2.erode()</code>) is applied using a kernel equal to one third of the robot’s size, enlarging obstacles and creating a safety margin that prevents collisions.
-</p>
-
-<p>
-  Next, the map is divided into square cells (<code>CELL_SIZE</code>) slightly smaller than the robot, forming a navigation grid. 
-  Each cell is analyzed, and if more than 10% of its pixels correspond to obstacles, it is marked as blocked (black). 
-  This process converts the grayscale map into a discrete occupancy grid suitable for path planning and navigation.
-</p>
-
-<h3 id="path-planning-with-bsa">Path Planning with BSA</h3> 
-<p>
-  The BSA (Backtracking Spiral Algorithm) was implemented as the main exploration and path planning method for the robot. 
-  Its objective is to cover the largest possible area of the map by visiting every reachable free cell while avoiding obstacles and minimizing repetitions. 
-  The algorithm works on the discrete occupancy grid previously created, where each cell represents a small portion of the environment.
-</p>
-
-<p>
-  The algorithm starts from the robot’s initial cell and explores the environment following a priority of four directions (up, right, down, left). 
-  At each step, the robot checks the neighboring cells: if a free and unexplored cell is found, it becomes the next target and the current cell is marked as explored. 
-  If multiple free neighbors exist, the priority one is selected for the next move, while the others are stored as <em>return points</em> for later exploration.
-</p>
-
-<p>
-  When the robot reaches a position where no adjacent cells are available, that location is marked as a <em>critical point</em>. 
-  At this stage, the algorithm selects the nearest return point previously saved and computes the optimal path to reach it using a BFS (Breadth First Search) . 
-  This mechanism allows the robot to backtrack efficiently and continue exploring from unexplored branches, ensuring full coverage of the environment.
-</p>
-
-<p>
-  Throughout the process, each cell in the grid is visually updated on the map with different colors to represent its state: 
-  unexplored cells, critical points, return points, and next goals. 
-  This visualization helps to monitor how the exploration expands and how the robot systematically covers the entire map.
-</p>
-
-<p>
-  Once the complete plan is generated, the algorithm extracts the turning points, the cells where the direction of movement changes, which are later used by the motion controller. 
-  This step simplifies the navigation commands and improves the smoothness of the robot’s trajectory.
-</p>
-
-
-<h3 id="reactive-control">Reactive Control</h3> 
-<p>
-  The reactive control in our implementation directly adjusts the robot’s motion based on continuous feedback from its current pose in Gazebo. 
-  At every loop iteration, the robot compares its current position and orientation with the target cell of the planned path. 
-  Two PID controllers independently regulate its linear and angular velocities: one minimizes the distance to the next cell (linear error), 
-  and the other aligns the robot’s heading toward the target (angular error).
-</p>
-
-<p>
-  The controller computes proportional, derivative, and integral terms using the position and angle differences, 
-  ensuring smooth and stable motion. When the angular error is small, the robot moves forward; 
-  otherwise, it stops and rotates until it aligns correctly. This mechanism allows the robot to accurately follow 
-  the discrete path generated by the BSA exploration algorithm while continuously correcting small deviations in real time.
-</p>
-
-<section id="video-section">
-        <h2>Watch the Localized Vacuum in action</h2>
-        <div class="video-container">
-                <video src="/assets/videos/localized_vacuum.webm" controls width="600"></video>
+    <!-- Navegación simple -->
+    <nav class="w-full z-50 py-6 border-b border-borderLight">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
+            <a href="/" class="text-xl font-serif font-semibold tracking-wide text-textMain hover:text-primary transition-colors">
+                <i class="fas fa-arrow-left mr-2 text-sm"></i> Back to Portfolio
+            </a>
+            <div class="text-sm font-medium text-textMuted uppercase tracking-widest">
+                Projects
+            </div>
         </div>
-</section>
-  </div><a class="u-url" href="/projects/update/2025/10/10/Localized-Vacuum-Cleaner.html" hidden></a>
-</article>
+    </nav>
 
+    <!-- Contenido Principal -->
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-borderLight relative z-10">
+            
+            <!-- Cabecera del Post -->
+            <header class="mb-12 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/40 text-primary text-xs font-medium uppercase tracking-widest border border-primary/20 mb-6">
+                    Service Robotics
+                </div>
+                <h1 class="text-4xl md:text-5xl font-serif text-textMain mb-4">P1 - Localized Vacuum Cleaner</h1>
+                <p class="text-textMuted font-medium uppercase tracking-widest text-sm">
+                    October 10, 2025
+                </p>
+            </header>
+
+            <!-- Cuerpo del Post -->
+            <div class="prose prose-lg max-w-none">
+                
+                <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 1: SERVICE ROBOTICS</h2>
+
+                <h3 id="objective">Objective</h3>
+                <p>The main objective of this practice is to implement the logic of a navigation algorithm for an autonomous vacuum cleaner by making use of the location of the robot. The robot is equipped with a map and knows it’s current location in it. The main objective will be to cover the largest area of ​​a house using the programmed algorithm.</p>
+
+                <hr />
+
+                <h3 id="map-registration">Map Registration</h3>
+                <p>
+                  To correctly register the map, a correspondence between the real-world coordinates from Gazebo and the pixel coordinates of the image map was established. 
+                  First, several reference points were selected in the Gazebo simulation environment using the functions <code>HAL.getPose3d().x</code> and <code>HAL.getPose3d().y</code> to obtain their real positions. These same points were then identified on the map image using an image editor (GIMP) to determine their pixel coordinates.
+                </p>
+
+                <p>
+                  The relationship between both coordinate systems can be expressed as:
+                </p>
+
+<pre><code>[px]   [ a  -b  tx ] [xg]
+[py] = [ b   a  ty ] [yg]
+[ 1]   [ 0   0   1 ] [ 1]</code></pre>
+
+                <p>
+                  where <code>(xg, yg)</code> are the Gazebo coordinates, and <code>(px, py)</code> are the corresponding pixel coordinates in the map. 
+                  The parameters <code>a</code>, <code>b</code>, <code>tx</code>, and <code>ty</code> were computed using the least squares method 
+                  (<code>np.linalg.lstsq</code>) by building the matrices A and B that relate both sets of points. 
+                  This approach minimizes the geometric error between the two coordinate systems and provides an optimal transformation matrix <code>T</code>.
+                </p>
+
+                <p>
+                  Finally, this transformation is used in the function <code>gazebo_to_map(x, y)</code> to convert any robot position from Gazebo coordinates to its equivalent pixel position on the map. 
+                </p>
+
+
+                <h3 id="creation-of-the-navigation-grid">Creation of the Navigation Grid</h3>
+                <p>
+                  The environment map is first converted to grayscale so it can be processed as a <code>uint8</code> matrix compatible with <code>WebGUI.showNumpy()</code>. 
+                  Then, an erosion operation (<code>cv2.erode()</code>) is applied using a kernel equal to one third of the robot’s size, enlarging obstacles and creating a safety margin that prevents collisions.
+                </p>
+
+                <p>
+                  Next, the map is divided into square cells (<code>CELL_SIZE</code>) slightly smaller than the robot, forming a navigation grid. 
+                  Each cell is analyzed, and if more than 10% of its pixels correspond to obstacles, it is marked as blocked (black). 
+                  This process converts the grayscale map into a discrete occupancy grid suitable for path planning and navigation.
+                </p>
+
+                <h3 id="path-planning-with-bsa">Path Planning with BSA</h3> 
+                <p>
+                  The BSA (Backtracking Spiral Algorithm) was implemented as the main exploration and path planning method for the robot. 
+                  Its objective is to cover the largest possible area of the map by visiting every reachable free cell while avoiding obstacles and minimizing repetitions. 
+                  The algorithm works on the discrete occupancy grid previously created, where each cell represents a small portion of the environment.
+                </p>
+
+                <p>
+                  The algorithm starts from the robot’s initial cell and explores the environment following a priority of four directions (up, right, down, left). 
+                  At each step, the robot checks the neighboring cells: if a free and unexplored cell is found, it becomes the next target and the current cell is marked as explored. 
+                  If multiple free neighbors exist, the priority one is selected for the next move, while the others are stored as <em>return points</em> for later exploration.
+                </p>
+
+                <p>
+                  When the robot reaches a position where no adjacent cells are available, that location is marked as a <em>critical point</em>. 
+                  At this stage, the algorithm selects the nearest return point previously saved and computes the optimal path to reach it using a BFS (Breadth First Search) . 
+                  This mechanism allows the robot to backtrack efficiently and continue exploring from unexplored branches, ensuring full coverage of the environment.
+                </p>
+
+                <p>
+                  Throughout the process, each cell in the grid is visually updated on the map with different colors to represent its state: 
+                  unexplored cells, critical points, return points, and next goals. 
+                  This visualization helps to monitor how the exploration expands and how the robot systematically covers the entire map.
+                </p>
+
+                <p>
+                  Once the complete plan is generated, the algorithm extracts the turning points, the cells where the direction of movement changes, which are later used by the motion controller. 
+                  This step simplifies the navigation commands and improves the smoothness of the robot’s trajectory.
+                </p>
+
+
+                <h3 id="reactive-control">Reactive Control</h3> 
+                <p>
+                  The reactive control in our implementation directly adjusts the robot’s motion based on continuous feedback from its current pose in Gazebo. 
+                  At every loop iteration, the robot compares its current position and orientation with the target cell of the planned path. 
+                  Two PID controllers independently regulate its linear and angular velocities: one minimizes the distance to the next cell (linear error), 
+                  and the other aligns the robot’s heading toward the target (angular error).
+                </p>
+
+                <p>
+                  The controller computes proportional, derivative, and integral terms using the position and angle differences, 
+                  ensuring smooth and stable motion. When the angular error is small, the robot moves forward; 
+                  otherwise, it stops and rotates until it aligns correctly. This mechanism allows the robot to accurately follow 
+                  the discrete path generated by the BSA exploration algorithm while continuously correcting small deviations in real time.
+                </p>
+
+                <section id="video-section" class="mt-8">
+                        <h4 class="text-xl font-serif text-textMain mb-4"><i class="fas fa-video mr-2 text-primary"></i> Watch the Localized Vacuum in action</h4>
+                        <div class="video-wrapper">
+                                <video src="/assets/videos/localized_vacuum.webm" controls></video>
+                        </div>
+                </section>
+                
+            </div>
+        </article>
     </main>
-    <footer>
-        <p>&copy; MOBILE AND SERVICE ROBOTICS</p>
+
+    <footer class="py-8 text-center text-textMuted text-sm mt-8 border-t border-borderLight">
+        <p>&copy; 2026 Mayra Madejón Vila. University Portfolio.</p>
     </footer>
+
 </body>
 </html>

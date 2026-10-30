@@ -1,141 +1,276 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P6 - Marker Based Visual Location | Mayra Madejón</title>
+    
+    <!-- Meta tags -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <title>P6 - Marker Based Visual Location</title>
-    <!-- Enlace al archivo CSS -->
-    <link rel="stylesheet" href="/assets/css/styles.css">
-    <!-- Apple icons y favicons -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#F2F5F0">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#F2F5F0',
+                        primary: '#8A9A86',
+                        accent: '#E0E5DF',
+                        textMain: '#2C352D',
+                        textMuted: '#6B726B',
+                        borderLight: '#D8DED5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        body { 
+            background-color: #F2F5F0;
+            color: #2C352D;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        /* Tipografía del artículo */
+        article h2, article h3, article h4 {
+            font-family: "Playfair Display", serif;
+            color: #2C352D;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        article h3 {
+            font-size: 1.75rem;
+            border-bottom: 1px solid #D8DED5;
+            padding-bottom: 0.5rem;
+        }
+
+        article h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        article p {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+        }
+        
+        article ul, article ol {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+            padding-left: 1.5rem;
+        }
+
+        article li {
+            margin-bottom: 0.5rem;
+        }
+
+        article strong, article b {
+            color: #1E251F;
+            font-weight: 600;
+        }
+        
+        /* Contenedor de Video / Imágenes */
+        .video-wrapper, .img-wrapper {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(138, 154, 134, 0.1);
+            border: 1px solid #D8DED5;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        video, img {
+            border-radius: 8px;
+            max-width: 100%;
+        }
+        
+        /* Enlaces */
+        a {
+            transition: color 0.3s ease;
+        }
+
+        /* Código inline */
+        code {
+            background-color: #E0E5DF;
+            color: #2C352D;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        hr {
+            border-color: #D8DED5;
+            margin: 2rem 0;
+        }
+    </style>
 </head>
-<body class="">
-    <header>
-        <h1>SERVICE ROBOTICS</h1>
-    </header>
-    <main>
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+<body class="antialiased selection:bg-primary/20 selection:text-textMain">
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">P6 - Marker Based Visual Location</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">Dec 25, 2025
-      </time></p>
-  </header>
+    <div class="bg-texture"></div>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 6: SERVICE ROBOTICS</h2>
-
-
-<h3 id="objective">Objective</h3>
-
-<p>
-The main goal of this practice is to program a robot equipped with a camera and odometry sensors to reliably self-localize within a domestic environment where visual beacons (AprilTags) are distributed at known locations.
-</p>
-<p>
-To achieve this, I need to address two main challenges:
-</p>
-<ul>
-<li>
-    <strong>Exploration Algorithm:</strong> I must implement a navigation logic that allows the robot to wander through the environment and visit different zones to find the markers. This can be done using time-based navigation or laser-based obstacle avoidance.
-</li>
-<li>
-    <strong>Visual Self-Localization:</strong> I need to program a Perspective-n-Point (PnP) algorithm. This algorithm extracts the relative position and orientation of the camera with respect to a beacon when one is detected. By combining this relative data with the absolute position of the beacon (stored in a map), I can calculate the robot's absolute position in the world.
-</li>
-</ul>
-<p>
-The system must function as a hybrid locator. When the robot detects a beacon, it should estimate its position using the PnP algorithm. If multiple beacons are visible, it should prioritize the closest one for better accuracy. When no beacons are visible, the robot must rely on odometry (Dead Reckoning) to measure the position increment since the last visual correction and add it to the last known position.
-</p>
-
-<h3 id="camera-calibration">Camera Model and Calibration</h3>
-<p>
-I assumed an ideal pinhole camera model. However, during initial testing, I noticed that the distance estimated by the vision system (the Z-axis) did not perfectly match reality in the simulator; the robot believed it was further away from the tags than it actually was.
-</p>
-<p>
-To solve this, I implemented a Correction Factor in the camera's intrinsic matrix calculation. Instead of using the image width directly as the focal length, I applied a slight scaling factor. This adjustment calibrated the projection, making the depth measurements accurate enough for reliable positioning.
-</p>
-
-<h3 id="navigation-strategy">Navigation Strategy</h3>
-<p>
-I implemented a time-based navigation system, the robot follows a pre-defined list of durations for its forward movements. Between each straight segment, it performs a turn, automatically alternating the direction to create a precise zigzag pattern that sweeps the map.
-</p>
-
-<h3 id="localization-algorithm">Localization Algorithm</h3>
-
-<p>
-The localization system is designed as a hybrid solution that combines two different sources of information to keep track of the robot's position:
-</p>
-<ul>
-<li>
-    <strong>Continuous Odometry:</strong> 
-    This runs continuously in the background. In every control loop, I calculate how much the robot has moved and add these small changes to the current estimated position.
-</li>
-<li>
-    <strong>Absolute Visual Correction:</strong> 
-    This acts as a correction mechanism. When the camera detects an AprilTag, the system calculates the robot's exact position in the world. This measurement is considered accurate, so I overwrite the estimated position with this new data, effectively removing the accumulated error.
-</li>
-</ul>
-<p>
-To convert the 2D image detection into a 3D position on the map, I followed this computational pipeline:
-</p>
-<ol>
-<li>
-    <strong>Perspective-n-Point (PnP):</strong> 
-    I used the cv2 solvePnP function. By comparing the known real-world size of the tag against the pixels detected in the image, the algorithm calculates the distance and rotation of the Tag relative to the camera.
-</li>
-<li>
-    <strong>Matrix Inversion:</strong> 
-    The PnP result tells me where the tag is located relative to the camera. However, for localization, I need the opposite: the position of the camera relative to the tag. To get this, I constructed the transformation matrix and calculated its inverse.
-</li>
-
-<li>
-    <strong>Coordinate System Alignment:</strong> 
-    A key challenge is that cameras and robots use different coordinate systems. The camera defines "depth" as the Z-axis and "right" as the X-axis. The robot's map defines "forward" as the X-axis. I mathematically swapped these axes and inverted the lateral direction to correct the orientation mismatch.
-</li>
-
-<li>
-    <strong>Global Integration:</strong> 
-    Finally, I mapped the robot's position from the local tag reference to the global map. Using the known absolute position of the tag, I rotated the robot's relative vector by the tag's angle and added the tag's coordinates. This gives the final corrected position and orientation on the map.
-</li>
-</ol>
-
-<h3 id="optimization">Optimization and Results</h3>
-<p>
-A key optimization I introduced was to pause the heavy image processing tasks while the robot is performing a turn. Any latency in the control loop caused by the computer vision algorithms resulted in inaccurate turning angles. By skipping detection during rotation, the movement became more precise.
-</p>
-
-<ol>
-  <section id="video-section">
-  <h2>Final Video:</h2>
-        <div class="video-container">
-                <video src="/assets/videos/markerLocation.webm" controls width="600"></video>
+    <!-- Navegación simple -->
+    <nav class="w-full z-50 py-6 border-b border-borderLight">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
+            <a href="/" class="text-xl font-serif font-semibold tracking-wide text-textMain hover:text-primary transition-colors">
+                <i class="fas fa-arrow-left mr-2 text-sm"></i> Back to Portfolio
+            </a>
+            <div class="text-sm font-medium text-textMuted uppercase tracking-widest">
+                Projects
+            </div>
         </div>
-</section>
-</ol>
+    </nav>
 
-  </div><a class="u-url" href="/projects/update/2025/12/29/Marker-Based-Visual-Location.html" hidden></a>
-</article>
+    <!-- Contenido Principal -->
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-borderLight relative z-10">
+            
+            <!-- Cabecera del Post -->
+            <header class="mb-12 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/40 text-primary text-xs font-medium uppercase tracking-widest border border-primary/20 mb-6">
+                    Service Robotics
+                </div>
+                <h1 class="text-4xl md:text-5xl font-serif text-textMain mb-4">P6 - Marker Based Visual Location</h1>
+                <p class="text-textMuted font-medium uppercase tracking-widest text-sm">
+                    December 25, 2025
+                </p>
+            </header>
 
+            <!-- Cuerpo del Post -->
+            <div class="prose prose-lg max-w-none">
+                
+                <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 6: SERVICE ROBOTICS</h2>
+
+                <h3 id="objective">Objective</h3>
+                <p>
+                The main goal of this practice is to program a robot equipped with a camera and odometry sensors to reliably self-localize within a domestic environment where visual beacons (AprilTags) are distributed at known locations.
+                </p>
+                <p>
+                To achieve this, I need to address two main challenges:
+                </p>
+                <ul class="list-disc">
+                    <li>
+                        <strong>Exploration Algorithm:</strong> I must implement a navigation logic that allows the robot to wander through the environment and visit different zones to find the markers. This can be done using time-based navigation or laser-based obstacle avoidance.
+                    </li>
+                    <li>
+                        <strong>Visual Self-Localization:</strong> I need to program a Perspective-n-Point (PnP) algorithm. This algorithm extracts the relative position and orientation of the camera with respect to a beacon when one is detected. By combining this relative data with the absolute position of the beacon (stored in a map), I can calculate the robot's absolute position in the world.
+                    </li>
+                </ul>
+                <p>
+                The system must function as a hybrid locator. When the robot detects a beacon, it should estimate its position using the PnP algorithm. If multiple beacons are visible, it should prioritize the closest one for better accuracy. When no beacons are visible, the robot must rely on odometry (Dead Reckoning) to measure the position increment since the last visual correction and add it to the last known position.
+                </p>
+                
+                <hr />
+
+                <h3 id="camera-calibration">Camera Model and Calibration</h3>
+                <p>
+                I assumed an ideal pinhole camera model. However, during initial testing, I noticed that the distance estimated by the vision system (the Z-axis) did not perfectly match reality in the simulator; the robot believed it was further away from the tags than it actually was.
+                </p>
+                <p>
+                To solve this, I implemented a Correction Factor in the camera's intrinsic matrix calculation. Instead of using the image width directly as the focal length, I applied a slight scaling factor. This adjustment calibrated the projection, making the depth measurements accurate enough for reliable positioning.
+                </p>
+                
+                <hr />
+
+                <h3 id="navigation-strategy">Navigation Strategy</h3>
+                <p>
+                I implemented a time-based navigation system, the robot follows a pre-defined list of durations for its forward movements. Between each straight segment, it performs a turn, automatically alternating the direction to create a precise zigzag pattern that sweeps the map.
+                </p>
+
+                <hr />
+
+                <h3 id="localization-algorithm">Localization Algorithm</h3>
+                <p>
+                The localization system is designed as a hybrid solution that combines two different sources of information to keep track of the robot's position:
+                </p>
+                <ul class="list-disc">
+                    <li>
+                        <strong>Continuous Odometry:</strong> 
+                        This runs continuously in the background. In every control loop, I calculate how much the robot has moved and add these small changes to the current estimated position.
+                    </li>
+                    <li>
+                        <strong>Absolute Visual Correction:</strong> 
+                        This acts as a correction mechanism. When the camera detects an AprilTag, the system calculates the robot's exact position in the world. This measurement is considered accurate, so I overwrite the estimated position with this new data, effectively removing the accumulated error.
+                    </li>
+                </ul>
+                <p>
+                To convert the 2D image detection into a 3D position on the map, I followed this computational pipeline:
+                </p>
+                <ol class="list-decimal">
+                    <li>
+                        <strong>Perspective-n-Point (PnP):</strong> 
+                        I used the <code>cv2.solvePnP</code> function. By comparing the known real-world size of the tag against the pixels detected in the image, the algorithm calculates the distance and rotation of the Tag relative to the camera.
+                    </li>
+                    <li>
+                        <strong>Matrix Inversion:</strong> 
+                        The PnP result tells me where the tag is located relative to the camera. However, for localization, I need the opposite: the position of the camera relative to the tag. To get this, I constructed the transformation matrix and calculated its inverse.
+                    </li>
+                    <li>
+                        <strong>Coordinate System Alignment:</strong> 
+                        A key challenge is that cameras and robots use different coordinate systems. The camera defines "depth" as the Z-axis and "right" as the X-axis. The robot's map defines "forward" as the X-axis. I mathematically swapped these axes and inverted the lateral direction to correct the orientation mismatch.
+                    </li>
+                    <li>
+                        <strong>Global Integration:</strong> 
+                        Finally, I mapped the robot's position from the local tag reference to the global map. Using the known absolute position of the tag, I rotated the robot's relative vector by the tag's angle and added the tag's coordinates. This gives the final corrected position and orientation on the map.
+                    </li>
+                </ol>
+
+                <hr />
+
+                <h3 id="optimization">Optimization and Results</h3>
+                <p>
+                A key optimization I introduced was to pause the heavy image processing tasks while the robot is performing a turn. Any latency in the control loop caused by the computer vision algorithms resulted in inaccurate turning angles. By skipping detection during rotation, the movement became more precise.
+                </p>
+
+                <!-- Video Section -->
+                <section id="video-section" class="mt-8">
+                    <h4 class="text-xl font-serif text-textMain mb-4"><i class="fas fa-video mr-2 text-primary"></i> Final Video</h4>
+                    <div class="video-wrapper">
+                        <video src="/assets/videos/markerLocation.webm" controls></video>
+                    </div>
+                </section>
+
+            </div>
+        </article>
     </main>
-    <footer>
-        <p>&copy; MOBILE AND SERVICE ROBOTICS</p>
+
+    <footer class="py-8 text-center text-textMuted text-sm mt-8 border-t border-borderLight">
+        <p>&copy; 2026 Mayra Madejón Vila. University Portfolio.</p>
     </footer>
+
 </body>
 </html>

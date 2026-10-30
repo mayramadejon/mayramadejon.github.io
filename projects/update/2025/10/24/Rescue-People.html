@@ -1,131 +1,278 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2 - Rescue People | Mayra Madejón</title>
+    
+    <!-- Meta tags -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    <title>P2 - Rescue People</title>
-    <!-- Enlace al archivo CSS -->
-    <link rel="stylesheet" href="/assets/css/styles.css">
-    <!-- Apple icons y favicons -->
-    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#F2F5F0">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#F2F5F0',
+                        primary: '#8A9A86',
+                        accent: '#E0E5DF',
+                        textMain: '#2C352D',
+                        textMuted: '#6B726B',
+                        borderLight: '#D8DED5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        body { 
+            background-color: #F2F5F0;
+            color: #2C352D;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .bg-texture {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0.3;
+            z-index: -1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        /* Tipografía del artículo */
+        article h2, article h3, article h4 {
+            font-family: "Playfair Display", serif;
+            color: #2C352D;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        article h3 {
+            font-size: 1.75rem;
+            border-bottom: 1px solid #D8DED5;
+            padding-bottom: 0.5rem;
+        }
+
+        article h4 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        article p {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+        }
+        
+        article ul, article ol {
+            margin-bottom: 1.25rem;
+            color: #4A564C;
+            font-size: 1.05rem;
+            padding-left: 1.5rem;
+        }
+
+        article li {
+            margin-bottom: 0.5rem;
+        }
+
+        article strong, article b {
+            color: #1E251F;
+            font-weight: 600;
+        }
+        
+        /* Contenedor de Video / Imágenes */
+        .video-wrapper, .img-wrapper {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -2px rgba(138, 154, 134, 0.1);
+            border: 1px solid #D8DED5;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        video, img {
+            border-radius: 8px;
+            max-width: 100%;
+        }
+        
+        /* Enlaces */
+        a {
+            transition: color 0.3s ease;
+        }
+
+        /* Código inline */
+        code {
+            background-color: #E0E5DF;
+            color: #2C352D;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        hr {
+            border-color: #D8DED5;
+            margin: 2rem 0;
+        }
+    </style>
 </head>
-<body class="">
-    <header>
-        <h1>SERVICE ROBOTICS</h1>
-    </header>
-    <main>
-        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+<body class="antialiased selection:bg-primary/20 selection:text-textMain">
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">P2 - Rescue People</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="2025-05-11T07:49:08+02:00" itemprop="datePublished">Oct 24, 2025
-      </time></p>
-  </header>
+    <div class="bg-texture"></div>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 2: SERVICE ROBOTICS</h2>
-
-<h3 id="objective">Objective</h3>
-<p>
-The goal of this practice is to program an autonomous drone to assist in a sea search and rescue mission.
-The drone must take off from a safety boat, fly to the area where an aircraft accident occurred, and perform
-a systematic search to detect people floating on the sea. Using its downward camera and OpenCV’s Haar Cascade
-face detector, the drone identifies survivors, stores their estimated GPS positions, and returns safely to
-the boat before running out of battery. This information can then be used by rescue teams to reach the victims.
-</p>
-
-<h3 id="UTM-coordinates">UTM coordinates</h3>
-
-<p>
-Although the initial data were given in GPS coordinates, the drone API does not work directly with them.
-We converted those GPS coordinates to UTM (Universal Transverse Mercator) so they are expressed in meters.
-Working in UTM makes it trivial to compute distances and directions for navigation: to command the drone to move
-from point A to point B we simply subtract the coordinates (Δ = B_UTM − A_UTM) and obtain a displacement in meters
-that the drone must apply on its local axes. Note that UTM uses Easting (+x) and Northing (+y), while our drone control
-uses North (+x), West (+y) and Height (+z), so we also apply the appropriate axis mapping and sign conventions before
-sending position setpoints. This keeps all frames consistent and ensures accurate movement and localization.
-</p>
-
-<h3 id="state-machine">State Machine</h3>
- <p>
-The drone behavior was implemented using a finite state machine with six main states:
-<ol>
-<li><b>TAKEOFF</b>: The drone takes off and reaches a safe height of 1.5 meters.</li>
-<li><b>GO</b>: It navigates from the boat to the target rescue area.</li>
-<li><b>SEARCH</b>: It performs a zig-zag exploration pattern while faces detections are processed and converted into real-world coordinates.</li>
-<li><b>SAFE</b>: Once the search is finished, the drone returns to the boat.</li>
-<li><b>LAND</b>: Finally, it lands safely and displays all detected victims and their coordinates.</li>
-</ol>
-
-<h3 id="sweep-algorithm">Sweep Algorithm</h3> 
-<p>
-To cover the entire search area efficiently, we implemented a <b>zig-zag sweep algorithm</b>.
-Starting from the rescue zone, the drone moves along a straight line in the X direction,
-then shifts slightly in Y, reverses direction, and continues.
-This systematic pattern guarantees full coverage of the area while maintaining a constant altitude.
-The function <code>search_persons()</code> generates all intermediate waypoints that define this trajectory.
-</p>
-
-<h3 id="face-detection">Face Detection</h3> 
-<p>
-The core of the detection system is based on OpenCV’s <code>Haar Cascade Classifier</code>.
-We used the file <code>haarcascade_frontalface_default.xml</code> to identify faces in the ventral camera image.
-Before detection, the algorithm filters out the sea by removing blue tones in the HSV color space,
-keeping only regions that are likely to contain human skin or other objects.
-To improve robustness, the image is rotated at multiple angles (0° to 360° every 20°) so that
-faces can be detected regardless of their orientation.
-Each detected face is then drawn on the image and used for position estimation.
-</p>
-
-<h3 id="calculate-real-coordinates">Calculate real coordinates</h3> 
-<p>
-Once a face is detected in the image, we estimate its real-world position relative to the drone.
-The function <code>calculate_coordinates()</code> converts image coordinates (pixels)
-to metric coordinates (meters) using a fixed conversion ratio (<code>m_per_pixel_x</code> and <code>m_per_pixel_y</code>).
-This transformation also considers the drone’s current GPS position and yaw angle,
-allowing us to calculate where the person is located in the global frame.
-If multiple detections are close to each other, they are grouped together to represent a single person.
-</p>
-
-<h3 id="battery_simulation">Battery Simulation</h3> 
-<p>
-To simulate a realistic mission scenario, we included a simple battery model that gradually decreases during flight.
-When the battery level reaches a critical threshold (20%), the drone automatically interrupts the search,
-returns to the boat, and proceeds to land safely.
-This ensures mission reliability and prevents energy exhaustion before the drone can return.
-</p>
-
-
-<section id="video-section">
-        <h2>Watch the Dron in action</h2>
-        <div class="video-container">
-                <video src="/assets/videos/Rescue-People2.webm" controls width="600"></video>
+    <!-- Navegación simple -->
+    <nav class="w-full z-50 py-6 border-b border-borderLight">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
+            <a href="/" class="text-xl font-serif font-semibold tracking-wide text-textMain hover:text-primary transition-colors">
+                <i class="fas fa-arrow-left mr-2 text-sm"></i> Back to Portfolio
+            </a>
+            <div class="text-sm font-medium text-textMuted uppercase tracking-widest">
+                Projects
+            </div>
         </div>
-</section>
-  </div><a class="u-url" href="/projects/update/2025/10/24/Rescue-People.html" hidden></a>
-</article>
+    </nav>
 
+    <!-- Contenido Principal -->
+    <main class="max-w-4xl mx-auto px-6 py-12">
+        <article class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-borderLight relative z-10">
+            
+            <!-- Cabecera del Post -->
+            <header class="mb-12 text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/40 text-primary text-xs font-medium uppercase tracking-widest border border-primary/20 mb-6">
+                    Service Robotics
+                </div>
+                <h1 class="text-4xl md:text-5xl font-serif text-textMain mb-4">P2 - Rescue People</h1>
+                <p class="text-textMuted font-medium uppercase tracking-widest text-sm">
+                    October 24, 2025
+                </p>
+            </header>
+
+            <!-- Cuerpo del Post -->
+            <div class="prose prose-lg max-w-none">
+                
+                <h2 id="practice-3-integration-and-study-of-dynamics-in-gazebo-and-ros2">Practice 2: SERVICE ROBOTICS</h2>
+
+                <h3 id="objective">Objective</h3>
+                <p>
+                The goal of this practice is to program an autonomous drone to assist in a sea search and rescue mission.
+                The drone must take off from a safety boat, fly to the area where an aircraft accident occurred, and perform
+                a systematic search to detect people floating on the sea. Using its downward camera and OpenCV’s Haar Cascade
+                face detector, the drone identifies survivors, stores their estimated GPS positions, and returns safely to
+                the boat before running out of battery. This information can then be used by rescue teams to reach the victims.
+                </p>
+
+                <hr />
+
+                <h3 id="UTM-coordinates">UTM Coordinates</h3>
+                <p>
+                Although the initial data were given in GPS coordinates, the drone API does not work directly with them.
+                We converted those GPS coordinates to UTM (Universal Transverse Mercator) so they are expressed in meters.
+                Working in UTM makes it trivial to compute distances and directions for navigation: to command the drone to move
+                from point A to point B we simply subtract the coordinates (Δ = B_UTM − A_UTM) and obtain a displacement in meters
+                that the drone must apply on its local axes. Note that UTM uses Easting (+x) and Northing (+y), while our drone control
+                uses North (+x), West (+y) and Height (+z), so we also apply the appropriate axis mapping and sign conventions before
+                sending position setpoints. This keeps all frames consistent and ensures accurate movement and localization.
+                </p>
+                
+                <hr />
+
+                <h3 id="state-machine">State Machine</h3>
+                <p>The drone behavior was implemented using a finite state machine with six main states:</p>
+                <ol class="list-decimal">
+                    <li><strong>TAKEOFF</strong>: The drone takes off and reaches a safe height of 1.5 meters.</li>
+                    <li><strong>GO</strong>: It navigates from the boat to the target rescue area.</li>
+                    <li><strong>SEARCH</strong>: It performs a zig-zag exploration pattern while faces detections are processed and converted into real-world coordinates.</li>
+                    <li><strong>SAFE</strong>: Once the search is finished, the drone returns to the boat.</li>
+                    <li><strong>LAND</strong>: Finally, it lands safely and displays all detected victims and their coordinates.</li>
+                </ol>
+
+                <hr />
+
+                <h3 id="sweep-algorithm">Sweep Algorithm</h3> 
+                <p>
+                To cover the entire search area efficiently, we implemented a <strong>zig-zag sweep algorithm</strong>.
+                Starting from the rescue zone, the drone moves along a straight line in the X direction,
+                then shifts slightly in Y, reverses direction, and continues.
+                This systematic pattern guarantees full coverage of the area while maintaining a constant altitude.
+                The function <code>search_persons()</code> generates all intermediate waypoints that define this trajectory.
+                </p>
+
+                <hr />
+
+                <h3 id="face-detection">Face Detection</h3> 
+                <p>
+                The core of the detection system is based on OpenCV’s <code>Haar Cascade Classifier</code>.
+                We used the file <code>haarcascade_frontalface_default.xml</code> to identify faces in the ventral camera image.
+                Before detection, the algorithm filters out the sea by removing blue tones in the HSV color space,
+                keeping only regions that are likely to contain human skin or other objects.
+                To improve robustness, the image is rotated at multiple angles (0° to 360° every 20°) so that
+                faces can be detected regardless of their orientation.
+                Each detected face is then drawn on the image and used for position estimation.
+                </p>
+
+                <hr />
+
+                <h3 id="calculate-real-coordinates">Calculate Real Coordinates</h3> 
+                <p>
+                Once a face is detected in the image, we estimate its real-world position relative to the drone.
+                The function <code>calculate_coordinates()</code> converts image coordinates (pixels)
+                to metric coordinates (meters) using a fixed conversion ratio (<code>m_per_pixel_x</code> and <code>m_per_pixel_y</code>).
+                This transformation also considers the drone’s current GPS position and yaw angle,
+                allowing us to calculate where the person is located in the global frame.
+                If multiple detections are close to each other, they are grouped together to represent a single person.
+                </p>
+                
+                <hr />
+
+                <h3 id="battery_simulation">Battery Simulation</h3> 
+                <p>
+                To simulate a realistic mission scenario, we included a simple battery model that gradually decreases during flight.
+                When the battery level reaches a critical threshold (20%), the drone automatically interrupts the search,
+                returns to the boat, and proceeds to land safely.
+                This ensures mission reliability and prevents energy exhaustion before the drone can return.
+                </p>
+
+                <hr />
+
+                <!-- Video Section -->
+                <section id="video-section" class="mt-8">
+                    <h4 class="text-xl font-serif text-textMain mb-4"><i class="fas fa-video mr-2 text-primary"></i> Watch the Drone in Action</h4>
+                    <div class="video-wrapper">
+                        <video src="/assets/videos/Rescue-People2.webm" controls></video>
+                    </div>
+                </section>
+
+            </div>
+        </article>
     </main>
-    <footer>
-        <p>&copy; MOBILE AND SERVICE ROBOTICS</p>
+
+    <footer class="py-8 text-center text-textMuted text-sm mt-8 border-t border-borderLight">
+        <p>&copy; 2026 Mayra Madejón Vila. University Portfolio.</p>
     </footer>
+
 </body>
 </html>
+
